@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Optional macOS launchd agent that runs auto-sync.sh every 15 minutes.
+     EDIT the Label to one you own (reverse-DNS you control) and the two paths,
+     then:  cp com.example.wikis-autosync.plist ~/Library/LaunchAgents/
+            launchctl load -w ~/Library/LaunchAgents/com.example.wikis-autosync.plist -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.example.wikis-autosync</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/sh</string>
+        <string><VAULT-PATH>/git-hooks/auto-sync.sh</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>900</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string><VAULT-PATH>/.git/auto-sync.log</string>
+    <key>StandardErrorPath</key>
+    <string><VAULT-PATH>/.git/auto-sync.log</string>
+</dict>
+</plist>

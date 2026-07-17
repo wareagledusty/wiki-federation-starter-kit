@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Federation auto-push.
+# After every commit, push to origin/main so committed work reaches your remote
+# with no manual step. Runs for every thread sharing this repo. Concurrency-safe
+# — threads edit different wiki folders, so a rebase never conflicts — and it
+# never blocks the commit (always exits 0; a failed push is retried by the next
+# commit).
+#
+# Canonical copy lives in version control: git-hooks/post-commit
+# Reinstall after a fresh clone:  sh git-hooks/install.sh
+#
+if git push origin HEAD:main 2>/dev/null; then
+  exit 0
+fi
+
+# Push rejected = another thread pushed first. Rebase onto the remote and retry once.
+if git pull --rebase --autostash origin main 2>/dev/null; then
+  git push origin HEAD:main 2>/dev/null
+else
+  git rebase --abort 2>/dev/null   # never leave a half-finished rebase behind
+fi
+exit 0

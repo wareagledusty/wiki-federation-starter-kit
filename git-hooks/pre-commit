@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Federation anti-conflation guard.
+# Blocks any single commit that spans two or more wikis, so concurrent agent
+# threads (one per wiki) can never merge each other's work into one commit.
+# "Wikis" = top-level directories except `_shared` and dotfolders.
+#
+# Canonical copy lives in version control: git-hooks/pre-commit
+# Reinstall after a fresh clone:  sh git-hooks/install.sh
+# Deliberate cross-cutting commit?  git commit --no-verify
+#
+set -u
+
+staged=$(git diff --cached --name-only)
+[ -z "$staged" ] && exit 0
+
+# Distinct top-level wiki dirs among staged files (skip _shared, dotfolders, root files).
+wikis=$(printf '%s\n' "$staged" \
+  | awk -F/ 'NF > 1 { print $1 }' \
+  | grep -v '^_shared$' \
+  | grep -v '^\.' \
+  | sort -u)
+
+count=$(printf '%s\n' "$wikis" | grep -c .)
+
+if [ "$count" -gt 1 ]; then
+  echo "──────────────────────────────────────────────────────────────"
+  echo "✋ Commit blocked — this commit touches more than one wiki:"
+  printf '%s\n' "$wikis" | sed 's/^/     • /'
+  echo ""
+  echo "Each wiki must be committed on its own (anti-conflation)."
+  echo "Stage and commit ONE wiki at a time instead:"
+  echo ""
+  echo "     git reset"
+  echo "     git add wiki-a/  && git commit -m 'wiki-a: …'"
+  echo "     git add wiki-b/  && git commit -m 'wiki-b: …'"
+  echo ""
+  echo "Deliberate cross-cutting commit? Re-run with:  git commit --no-verify"
+  echo "──────────────────────────────────────────────────────────────"
+  exit 1
+fi
+
+exit 0
