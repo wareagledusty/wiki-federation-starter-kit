@@ -84,3 +84,12 @@ To connect **Obsidian** (the reading surface) and **GitHub** (backup + auto-push
 ## License
 
 MIT — see [LICENSE](LICENSE). Clone it, fork it, build your own federation on it. Attribution is appreciated but not required.
+
+## The four lines
+
+(estate maintenance protocol, ratified 2026-08-23)
+
+- **Purpose:** the public, genericized starter kit for LLM-maintained wiki federations: the portable protocol, templates, archetypes, commands, and git plumbing, with no one's content in it.
+- **Owner:** Dusty Holcomb.
+- **Recovery path:** `git clone https://github.com/wareagledusty/wiki-federation-starter-kit.git`. That is the whole path: a public template holds no secrets, no worker, and no state, so `RECOVERY.md` is waived by ruling (2026-08-23). The shipped `git-hooks/` are payload for stamped federations, deliberately not installed in this repository.
+- **Retirement condition:** retired only by Dusty's ruling, when the kit is superseded or archived; being public, retirement means archiving the repository, never deleting it, so existing clones and links keep resolving.
