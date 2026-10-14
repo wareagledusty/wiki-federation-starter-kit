@@ -2,7 +2,7 @@
 
 A knowledge base your AI keeps current. You feed it sources. It writes linked, cited pages and keeps them up to date. When an answer is worth keeping, you file it back, so your thinking compounds instead of starting over in every new chat.
 
-It's plain markdown and git. There's no database, no server, and nothing to lock you in. It's built for any AI coding agent that reads `AGENTS.md`, including Claude Code and Codex. See [COMPATIBILITY.md](COMPATIBILITY.md) for what's been tested.
+It's plain markdown and git. There's no database, no server, and nothing to lock you in. It's built for any AI coding agent that reads `AGENTS.md`, and it's been tested in Claude Code and Codex. [COMPATIBILITY.md](COMPATIBILITY.md) has the details for each agent.
 
 **New to the idea?** Read the [primer](docs/Arcqus-AI-LLM-Wiki-Primer.pdf) first. It takes about twenty minutes and assumes no background.
 
