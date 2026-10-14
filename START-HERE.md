@@ -1,120 +1,126 @@
-# START HERE — Build a Wiki Federation (agent build spec)
+# Start here: build your first wiki
 
-> **Who this file is for:** an AI coding agent (e.g. Claude Code) that a human has just pointed at this folder. If you are that agent, this document *is your instructions*. Execute it. If you are a human reading it, the short version is: open this folder in Claude Code and say **"Read START-HERE.md and build my federation."** The agent will take it from here.
+**If you're a person:** open this folder in your AI agent (Claude Code, Codex, or similar) and type **"Read START-HERE.md and build my first wiki."** The agent takes it from there. It asks you a few questions, builds the wiki, and walks you through your first sources.
 
----
-
-## What you are about to build
-
-An **LLM wiki federation**: one or more markdown wikis that an agent maintains, sharing a common protocol but each running its own contradiction/authorship policy. The full concept is in [README.md](README.md); the manual form of these steps is in [SETUP.md](SETUP.md). Read both before you start building — this file is the executable checklist that ties them together.
-
-The kit you're standing in contains the **source templates** you will copy from:
-
-- `_shared/` — the base protocol, page templates, recipe, operator guide (these move into the federation as-is).
-- `archetypes/` — two overlay templates (`reconcile-overlay.md`, `preserve-tension-overlay.md`). You copy the right one to each wiki's `CLAUDE.md` and fill its placeholders.
-- `commands/` — the six slash-commands. You copy all six into each wiki's `.claude/commands/`.
-- `CLAUDE.md` — the root registry template. You fill its table.
-- `git-hooks/` — optional plumbing.
+**If you're the agent:** this file is your build spec. Follow it in order. Before each step that writes files, say what you're about to do and get a yes. You build structure; the human supplies the substance. Never invent content.
 
 ---
 
-## Step 1 — Interview the human (do NOT assume; ask, then confirm)
+## Step 1. Check where you are
 
-Gather these decisions before writing anything. Ask them conversationally, in one or two batches, and echo back a summary for confirmation before you build.
+You should be in the kit's top folder. It holds `START-HERE.md`, `AGENTS.md`, `_shared/`, and `archetypes/`. If you're somewhere else, ask the human to open that folder in their agent and start again.
 
-**About the federation:**
-1. **Where should it live?** Either *"build it in place — this folder becomes the vault"* or a target path (e.g. `~/my-wikis`). Default: build in place.
-2. **Git:** initialize a repo? Is there a remote to push to? (Optional — the hooks need a remote only if they want auto-push.)
-3. **How many wikis to start with?** Recommend **one**. More can be stamped out later via `_shared/ADDING-A-WIKI.md`.
+## Step 2. Check git
 
-**For each wiki (repeat):**
-4. **Display name** (e.g. "Field Notes") and **folder slug** (e.g. `field-notes`).
-5. **Archetype** — *reconcile* (one current cited best answer; competitive/reference/factual) or *preserve-tension* (keeps competing views in dialogue; worldview/thesis/research). If unsure, ask what the wiki is *for* and pick: "one right answer that stays current" → reconcile; "a body of thinking where disagreement is the point" → preserve-tension.
-6. **Scope** — one sentence: what belongs here and, by implication, what doesn't.
-7. **Authorship posture** — *gated* (the human authors positions; you challenge and maintain) or *maintained* (you maintain; the human reviews positioning). Preserve-tension → usually gated; reconcile → usually maintained.
-8. **Confidential?** Does it hold client-private or personal material with export limits? If yes, flag it — you'll note the confidentiality posture in its overlay and root registry, and NOT wire any export/downstream feed without explicit instruction (see `ADDING-A-WIKI.md` → confidential wikis).
-9. **Relationship vocabulary** — default to the archetype's built-in set unless they want custom edges.
+Run these from the top folder. Fix what they find, and explain each fix to the human in one sentence.
 
-> If the human just says "you decide" — pick sensible defaults, state them explicitly, and proceed. Never invent *content*; do invent reasonable *structure* and label it as your choice.
+1. **Is this a git repository?**
 
----
+   ```sh
+   git rev-parse --is-inside-work-tree
+   ```
 
-## Step 2 — Scaffold the federation root
+   If that fails (for example, the human downloaded a ZIP), run `git init -b main`. Some agents only see the shared rules inside a git repository, so this comes first.
 
-Working at the chosen location (in place, or the target path):
+2. **Is `origin` the public starter kit?**
 
-1. If not already a git repo and they want one: `git init`.
-2. Ensure `_shared/` is at the root (it already is if building in place; otherwise copy the kit's `_shared/` there).
-3. Place the root `CLAUDE.md` at the root (copy the kit's `CLAUDE.md` template if building at a new path).
-4. Ensure the kit's `.gitignore` is at the root (already present if building in place; otherwise copy it over). It ignores OS cruft and Obsidian's per-machine state — and, by design, leaves `raw/` sources *tracked*, since git is the backup. To keep heavy binary media out of history, opt in per-type via the commented block inside it.
+   ```sh
+   git remote get-url origin
+   ```
 
----
+   If it prints an address containing `wareagledusty/wiki-federation-starter-kit`, the human cloned the public kit. Run `git remote remove origin`, and tell them: "Your copy was still connected to the public starter kit, so I disconnected it. Your work can't go there by accident now. You'll connect your own private repository later, from CONNECT-OBSIDIAN-AND-GITHUB.md." If it prints the human's own repository (they used **Use this template**), or reports that there's no such remote, leave it alone.
 
-## Step 3 — Build each wiki
+3. **Can git sign commits?**
 
-For every wiki from the interview, create:
+   ```sh
+   git config user.name
+   git config user.email
+   ```
 
-```
-<slug>/
-├── CLAUDE.md            ← copied from the chosen archetype overlay, placeholders filled
-├── .claude/commands/    ← all six files from commands/
-├── raw/                 ← empty; the human's immutable sources land here
-├── wiki/                ← empty; the pages you'll create live here
-├── index.md             ← seeded from _shared/TEMPLATES.md (state-file formats)
-├── log.md               ← seeded from _shared/TEMPLATES.md
-└── _state/
-    ├── sources.md       ← seeded from _shared/TEMPLATES.md
-    └── review-queue.md  ← seeded from _shared/TEMPLATES.md
+   If either prints nothing, ask the human what name and email to sign commits with. Then set them for this folder only, with `git config user.name "<name>"` and `git config user.email "<email>"`.
+
+## Step 3. Ask a few questions
+
+Ask a few at a time, in plain words. Then repeat back a short summary, and get a yes before you build anything.
+
+1. **What's the wiki for?** One or two sentences. This becomes its scope: what belongs in it and, by implication, what doesn't.
+2. **What should it be called?** A name, like "Market notes," and a folder name in lowercase with hyphens, like `market-notes`.
+3. **Which kind of wiki?** Recommend **reconcile** (one current, cited answer per question) unless the human is deliberately building a thesis or worldview. Give the reason in one line: preserve-tension holds every position in draft until the human writes a thesis, which is right for that use and frustrating on day one.
+4. **Will it hold confidential material,** such as client detail or private figures? If yes, say so in its scope. Remind them that whatever you read goes to the AI provider under their account's terms. Never set up an export without their explicit say-so. For more, see "Confidential wikis" in `_shared/ADDING-A-WIKI.md`.
+
+Keep the archetype's defaults for everything else (authorship rules, relationship vocabulary) unless the human asks for changes. If they say "you decide," pick sensible defaults, say what you picked, and carry on.
+
+## Step 4. Build the wiki
+
+Run these from the top folder, with `<slug>` replaced by the folder name. This is the **reconcile** build:
+
+```sh
+mkdir -p <slug>/raw <slug>/wiki/sources <slug>/_state <slug>/initiatives <slug>/archive <slug>/exports
+touch <slug>/raw/.gitkeep <slug>/wiki/sources/.gitkeep <slug>/initiatives/.gitkeep <slug>/archive/.gitkeep <slug>/exports/.gitkeep
+cp archetypes/reconcile-overlay.md <slug>/AGENTS.md
+printf '@AGENTS.md\n' > <slug>/CLAUDE.md
+cp _shared/seed/index.md _shared/seed/log.md _shared/seed/current-state.md <slug>/
+cp _shared/seed/sources.md _shared/seed/review-queue.md <slug>/_state/
 ```
 
-Then the archetype-specific folders:
-- **preserve-tension:** add `notes/` (the sidecar for un-ratified hunches).
-- **reconcile:** add `initiatives/`, `archive/`, `exports/`, and a `current-state.md` (living "what's true now" brief).
+For a **preserve-tension** wiki, run this instead:
 
-**Filling the overlay (`<slug>/CLAUDE.md`):**
-- Copy `archetypes/reconcile-overlay.md` or `archetypes/preserve-tension-overlay.md`.
-- Replace every `<PLACEHOLDER>` with the interview answers (name, scope, authorship, confidentiality, vocabulary).
-- For a preserve-tension wiki, **leave the `THE THESIS` block for the human to author** — do not write a thesis. Prompt them to fill it, and until they do, never let a page assert one.
-- **The shared base:** the overlay's first line is `@../_shared/wiki-base.md`. Verify your tool resolves that relative import (from `<slug>/CLAUDE.md` to `_shared/wiki-base.md`). If you cannot confirm it resolves, **inline the full contents of `_shared/wiki-base.md`** in place of that line, wrapped in clear `<!-- SHARED BASE (inlined mirror; canonical: _shared/wiki-base.md) -->` … `<!-- END SHARED BASE -->` markers, so the wiki still behaves correctly. Note in the overlay which approach you used.
+```sh
+mkdir -p <slug>/raw <slug>/wiki/sources <slug>/_state <slug>/notes
+touch <slug>/raw/.gitkeep <slug>/wiki/sources/.gitkeep <slug>/notes/.gitkeep
+cp archetypes/preserve-tension-overlay.md <slug>/AGENTS.md
+printf '@AGENTS.md\n' > <slug>/CLAUDE.md
+cp _shared/seed/index.md _shared/seed/log.md <slug>/
+cp _shared/seed/sources.md _shared/seed/review-queue.md <slug>/_state/
+```
+
+Then edit `<slug>/AGENTS.md`:
+
+* Replace every `<PLACEHOLDER>` with the interview answers: the name, the scope, and the confidentiality line.
+* Delete the "Template note" paragraph at the top. Keep the "Shared rules first" paragraph.
+* For preserve-tension, **leave THE THESIS block for the human.** Never write a thesis. Ask them to fill it in when they're ready. Until they do, no page may assert one.
+
+## Step 5. Register it
+
+In the top folder's `AGENTS.md`, add one row to the registry table (section 3): the wiki's name, its folder, its archetype, and its one-line scope.
+
+## Step 6. Commit
+
+```sh
+git add -A
+git commit -m "<slug>: create wiki"
+```
+
+A new wiki plus top-level files is a valid single commit. Some agents ask before every commit; Codex does. If yours asks, tell the human to approve it.
+
+## Step 7. Walk through the first loop
+
+Read `<slug>/AGENTS.md` in full now, and work under it for the rest of this session. Then walk the human through the four moves, one at a time:
+
+1. **Ingest.** Ask them to put three or four real sources in `<slug>/raw/`: notes, articles, or transcripts, with markdown or plain text easiest. Ingest them one at a time, following `_shared/operations/ingest.md`.
+2. **Query.** Have them ask a question the sources should answer, and follow `_shared/operations/query.md`. Point out the citations in your answer.
+3. **File back.** Save the best answer as a page, following `_shared/operations/file-back.md`.
+4. **Lint.** Run a health check, following `_shared/operations/lint.md`.
+
+## Step 8. Hand off
+
+Tell the human three things:
+
+1. **From now on, start your agent inside the wiki's folder,** `<slug>/`. That's how Claude Code and Codex load both the shared rules and this wiki's rules. For other agents, see `COMPATIBILITY.md`.
+   * Claude desktop app: open the Code tab, choose Local, click **Select folder**, and pick `<slug>`.
+   * Claude Code in a terminal: `cd <slug>`, then `claude`.
+   * Codex in the ChatGPT desktop app: click **Add new project** and pick `<slug>`.
+   * Codex in a terminal: `cd <slug>`, then `codex`.
+2. **The day-to-day rhythm** is in `_shared/OPERATORS-GUIDE.md`.
+3. **Reading and backup are optional,** and both are covered in `CONNECT-OBSIDIAN-AND-GITHUB.md`: Obsidian for reading the wiki, and a private GitHub repository for backing it up. Offer to walk them through it now.
 
 ---
 
-## Step 4 — Wire the root registry
+## Guardrails (the whole way through)
 
-Open the root `CLAUDE.md` and replace the two example rows with one row per wiki you built: name, folder slug, archetype, one-line scope. This table is the canonical list of what exists and where the "one wiki at a time, never cross-link" boundary is enforced. Keep each scope line in sync with that wiki's overlay.
-
----
-
-## Step 5 — Connect GitHub + Obsidian (offer to walk them through it)
-
-Two integrations make the build safe and pleasant; **offer both**, and follow **[CONNECT-OBSIDIAN-AND-GITHUB.md](CONNECT-OBSIDIAN-AND-GITHUB.md)** for the exact steps — read it before guiding them.
-
-- **GitHub (backup + auto-push).** If they want a remote, help them: create a private repo, set the remote, and choose an auth method — **prefer SSH with a no-passphrase deploy key** because the post-commit hook pushes unattended (a passphrase or uncached HTTPS token will hang the hook). Confirm the *first* push works by hand (the hook swallows push errors on purpose, so a broken remote fails silently). Then edit the hook placeholders (`<HOME>`, `<VAULT-PATH>`, the `com.example.wikis-autosync` label, the `origin/main` remote) and run `sh git-hooks/install.sh`. The optional launchd agent (macOS) is periodic background sync — skip unless they want it.
-- **Obsidian (reading surface).** Point them to install Obsidian and *Open folder as vault* at the federation root, and to enable the **Dataview** plugin so the typed `relates_to` edges become queryable. Obsidian only reads the folder — it does not sync to GitHub; git does.
-
-If they don't want git/GitHub or Obsidian right now, that's fine — the wikis run on Claude Code alone. Note it and move on; they can add either later from the connect guide.
-
----
-
-## Step 6 — Prove the loop, then hand off
-
-Don't declare done until the loop works end to end. Walk the human through:
-
-1. Drop 3–4 real sources into `<slug>/raw/`, then run `/ingest` on each (one at a time).
-2. Run `/query` on something the sources should answer — confirm a **cited** answer.
-3. `/file-back` a strong answer — confirm it becomes a page (a draft awaiting ratification in a gated wiki).
-4. `/lint` — confirm the contradiction policy behaves per archetype (reconcile flags a contradiction to resolve; preserve-tension *keeps* one).
-
-Then point them at `_shared/OPERATORS-GUIDE.md` for the daily rhythm, and `_shared/ADDING-A-WIKI.md` for stamping out the next wiki.
-
-**Optional cleanup:** once built, `archetypes/`, `commands/`, `START-HERE.md`, `README.md`, and `SETUP.md` are reference material — they can stay (harmless) or be moved into a `_kit/` folder to keep the vault tidy. `_shared/` must stay. Ask before deleting anything.
-
----
-
-## Guardrails (hold these the whole way)
-
-- **Never invent content.** You build *structure*; the human supplies *substance*. Where a value is unknown, use a visible `[[VERIFY: …]]` placeholder — never a confident fabrication.
-- **Confirm before writing** at each major step, especially the first time you scaffold. Show the plan, get the go-ahead.
-- **One commit, one wiki.** If you commit as you build, commit each wiki's folder separately with a wiki-name-prefixed message; `_shared/` and root files may commit on their own. (The pre-commit hook enforces this once installed.)
-- **Respect the boundary from the start.** Never cross-link one wiki to another; never ingest out-of-scope material. Clean separation is the whole value.
-- **The thesis is the human's.** In a gated/preserve-tension wiki you may challenge and maintain, never author or soften a position.
+* **Never invent content.** You build structure, and the human supplies substance. An unknown value gets `{{VERIFY: what's missing}}`.
+* **Confirm before writing,** especially the first scaffold.
+* **One commit, one wiki.**
+* **Never link one wiki to another,** and never ingest material outside a wiki's scope.
+* **The thesis belongs to the human.** In a preserve-tension wiki, you challenge and maintain; you never author or soften a position.
+* **Leave the kit's own files in place.** `_shared/`, `archetypes/`, and `examples/` are what the next wiki is built from. Ask before moving or deleting anything.
