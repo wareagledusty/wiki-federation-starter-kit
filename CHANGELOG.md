@@ -26,6 +26,7 @@ Version 2 makes the kit work in any capable AI coding agent, fixes the places wh
 * START-HERE builds one wiki first, on the reconcile archetype unless you're building a thesis or worldview.
 * Both archetypes stand alone; neither assumes the other exists.
 * A privacy note says where your sources go when the agent reads them.
+* The companion primer ships in `docs/Arcqus-AI-LLM-Wiki-Primer.pdf`: a plain-language introduction to the idea, with a last page that points back to this kit.
 * GitHub CLI over HTTPS is the recommended sign-in for backup. It was tested unattended, the way the hook uses it.
 
 ### Consistency fixes
