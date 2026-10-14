@@ -2,3 +2,7 @@
 # so their first line (#!/bin/sh) keeps working after checkout.
 git-hooks/* text eol=lf
 *.sh text eol=lf
+
+# Sources in raw/ are immutable records: never convert their line endings,
+# so a source's sha256 in the ledger matches on every computer.
+**/raw/** -text
