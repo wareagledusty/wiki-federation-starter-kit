@@ -47,7 +47,7 @@ Version 2 makes the kit work in any capable AI coding agent, fixes the places wh
 
 * **pre-commit** counts a folder as a wiki only if it holds `AGENTS.md`, so the kit's own folders no longer count. It also catches a page moved between wikis.
 * **post-commit**
-  * no longer fires again during its own rebase, which used to push half-rebased history;
+  * does nothing when git re-runs it from inside its own rebase (v1 pushed half-rebased history from there: six pushes for three commits in testing, against three now);
   * pushes your current branch, not always `main`;
   * refuses to push to the public kit;
   * never waits for a password;
