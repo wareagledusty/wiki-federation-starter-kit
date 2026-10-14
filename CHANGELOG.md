@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* **Live tested in Claude Code and Codex** on 2026-10-14. Each ran START-HERE, a first cited answer, a file back, and a lint pass. COMPATIBILITY.md and the README now say so.
+
 ## v2.0.0
 
 Version 2 makes the kit work in any capable AI coding agent, fixes the places where a first-timer got stuck, and adds a fully worked example. It's a breaking release if you built on v1; see "Moving from v1" below.

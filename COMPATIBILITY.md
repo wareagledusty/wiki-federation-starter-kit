@@ -7,7 +7,7 @@ This kit is plain markdown and git, so any AI coding agent that can read and edi
 * **Docs checked:** the behavior comes from the vendor's current documentation.
 * **Live tested:** someone ran the kit's live test in that agent: START-HERE, a first cited answer, a file back, and a lint pass.
 
-As of 2026-10-13, every entry is **docs checked**. No agent is marked live tested yet.
+As of 2026-10-14, Claude Code and Codex are **live tested**. Every other entry is **docs checked**.
 
 ## What the kit needs from an agent
 
@@ -22,8 +22,8 @@ That's all. Skills and slash commands are shortcuts. A plain request like "inges
 
 | Agent | Started in a wiki folder, loads both rule files? | What you set up | `wiki-*` skills | Evidence |
 |---|---|---|---|---|
-| Claude Code (terminal or desktop app) | Yes, through the one-line `CLAUDE.md` files. Allow the one-time import prompt. | Nothing | Yes, from `.claude/skills/` | Docs checked 2026-10-13 |
-| Codex (CLI, IDE extension, ChatGPT desktop app) | Yes, walking down from the git root. The top folder must be a git repository. | Nothing. Approve each commit when asked. | Yes, from `.agents/skills/` | Docs checked 2026-10-13 |
+| Claude Code (terminal or desktop app) | Yes, through the one-line `CLAUDE.md` files. Allow the one-time import prompt. | Nothing | Yes, from `.claude/skills/` | Live tested 2026-10-14 |
+| Codex (CLI, IDE extension, ChatGPT desktop app) | Yes, walking down from the git root. The top folder must be a git repository. | Nothing. Approve each commit when asked. | Yes, from `.agents/skills/` | Live tested 2026-10-14 |
 | Gemini CLI | Yes, after one setting | `context.fileName` in `~/.gemini/settings.json`, plus `--include-directories` | Not from inside a wiki folder | Docs checked 2026-10-13 |
 | Cursor | Open the top folder instead. It reads nested files. | Nothing | Yes, from `.agents/skills/` | Docs checked 2026-10-13 |
 | GitHub Copilot in VS Code | With a setting | `chat.useNestedAgentsMdFiles`, or `chat.useCustomizationsInParentRepositories` | Yes, from `.agents/skills/` or `.claude/skills/` | Docs checked 2026-10-13 |
@@ -32,7 +32,7 @@ That's all. Skills and slash commands are shortcuts. A plain request like "inges
 
 * **Instruction files.** Claude Code loads `CLAUDE.md` from the folder you start in and every folder above it. It loads a subfolder's `CLAUDE.md` later, once it reads or edits a file there. [1]
 * **Imports.** A `CLAUDE.md` can pull in another file with `@path`, and a relative path resolves from the file that contains it. The docs describe an `@AGENTS.md` import in a `CLAUDE.md` as the way to share one instruction file with other tools. That's why every `CLAUDE.md` in this kit is the single line `@AGENTS.md`. [1]
-* **One-time prompt.** When you start inside a wiki folder, the top folder's import points outside the folder you started in. Claude Code asks once before loading imports like that, so allow it. If you decline, the docs say those imports stay off and the prompt doesn't come back. The wiki's own rules then tell the agent to read the top folder's `AGENTS.md` itself. *(The prompt is inferred from the docs' definition of an external import. The live test confirms it.)* [1]
+* **One-time prompt.** When you start inside a wiki folder, the top folder's import points outside the folder you started in. Claude Code asks once before loading imports like that, so allow it. If you decline, the docs say those imports stay off and the prompt doesn't come back. The wiki's own rules then tell the agent to read the top folder's `AGENTS.md` itself. *(The prompt is inferred from the docs' definition of an external import. The live test didn't record its wording.)* [1]
 * **Reads above the wiki folder.** By default, Claude Code can read files in the folder you started in. The shared procedures live in the folder above it, in `../_shared/operations/`. The first time its file tools read a file outside the start folder, it may ask you. Allow it. Shell reads such as `cat` don't ask by default. [7] [8]
 * **Reading `AGENTS.md` without an import.** Since version 2.1.277, Claude Code reads `AGENTS.md` on its own, but only when there's no `CLAUDE.md` in the folder or above it. This kit ships `CLAUDE.md` files, so the import is what loads the rules, in any version. [1] [2]
 * **Skills.** Claude Code loads project skills from `.claude/skills/` in the folder you start in and in every parent up to the repository root. So the kit's top-level `wiki-*` skills show up when you start inside a wiki folder. The docs don't list `.agents/skills/` as a skills location, so the kit ships the same wrappers in both folders. [3]
