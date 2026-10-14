@@ -1,69 +1,76 @@
-# Operator's Guide — Running the Federation
+# Operator's guide: living with your wiki
 
-> Your day-to-day manual once the federation is installed. The schemas tell the agent how to behave; this tells *you* how to live with it. Short, practical, and built around one rule: **the value is in reaching for it, not in building it.**
+This is your day-to-day manual once a wiki is built. The rules tell the agent how to behave; this guide tells you how to live with it. It comes down to one idea: **the value is in reaching for the wiki, not in building it.**
 
----
+## Where to start your agent
 
-## The mental model, once
+Start it **inside the wiki's folder**. That's how Claude Code and Codex load both the shared rules and your wiki's rules. For other agents, see [COMPATIBILITY.md](../COMPATIBILITY.md).
 
-You curate sources, ask good questions, and decide what things mean. The agent does the bookkeeping — reading, summarizing, cross-referencing, filing, flagging. The wiki is the asset; the chat is throwaway. Your thinking becomes something you *build and own*, not a fire you relight every morning.
+## The mental model
 
-## The six commands
+You curate sources, ask good questions, and decide what things mean. The agent does the bookkeeping: reading, summarizing, cross-referencing, filing, and flagging. The wiki is the asset, and the chat is disposable. Your thinking becomes something you build and own, instead of a fire you relight every morning.
 
-Same set in every wiki; each defers to that wiki's policy.
+## The four moves
 
-| Command | When you reach for it |
-|---|---|
-| `/ingest <source>` | A new source exists — fold it in. |
-| `/query <question>` | You'd otherwise open a blank chat to think something through. |
-| `/file-back` | An answer was strong — preserve it so it compounds. |
-| `/lint` | Scheduled health check (add `report-only` for a quick status snapshot). |
-| `/consolidate` | Periodic deep pass — let new structure surface. |
-| `/review` | Clear the queue — where your authorship and positioning control live. |
+Ask in plain words. Agents that support skills also offer the shortcuts in the last column.
+
+| Move | When you reach for it | Say something like | Shortcut |
+|---|---|---|---|
+| **Ingest** | A new source exists, so fold it in. | "Ingest raw/pricing-notes.md." | `wiki-ingest` |
+| **Query** | You'd otherwise open a blank chat to think something through. | "What's our current position on pricing?" | `wiki-query` |
+| **File back** | An answer was strong, so keep it and let it compound. | "File that back as a page." | `wiki-file-back` |
+| **Lint** | Your weekly health check. | "Run a lint." For a snapshot with no changes: "Lint, report only." | `wiki-lint` |
+
+## Keeping it healthy
+
+| Operation | When you reach for it | Say something like | Shortcut |
+|---|---|---|---|
+| **Consolidate** | Monthly, so deeper structure can surface. | "Consolidate the wiki." | `wiki-consolidate` |
+| **Review** | Weekly, to clear the decisions the agent queued for you. This is where you keep control. | "Let's go through the review queue." | `wiki-review` |
 
 ## Wire it to work you already do
 
-Don't invent a "wiki hour." Attach a five-minute step at the two natural seams of any workstream: a **drop point** (the artifact it already produces → `/ingest`) and a **pull point** (the moment you'd start from blank → `/query`).
+Don't invent a "wiki hour." Attach a five-minute step to the two natural seams of any workstream. A **drop point** is where the work already produces something you can ingest. A **pull point** is the moment you'd otherwise start from a blank page, so you query instead.
 
 | Workstream | Drop point (feed it) | Pull point (ask it) |
 |---|---|---|
-| Reading for a thesis | Clip/save the source → `/ingest` into the preserve-tension wiki | "Where does this sit in the debate? What contests it?" → `/query` |
-| A competitor or field signal | Note → `/ingest` into the reconcile wiki | "What's our current, grounded position?" → `/query` |
-| Finishing a piece of thinking | `/file-back` the sharpened framing | "Have I argued this before? What's the through-line?" → `/query` |
-| Prepping outward-facing work | — | Pull from the reconcile wiki's `current-state.md` / let downstream tools read `exports/` |
+| A competitor or market signal | Save the note and ingest it into your reconcile wiki | "What's our current, grounded position?" |
+| Reading for a thesis | Save the source and ingest it into your preserve-tension wiki | "Where does this sit in the debate? What contests it?" |
+| Finishing a piece of thinking | File back the sharpened framing | "Have I argued this before? What's the through-line?" |
+| Preparing outward-facing work | Nothing new to feed | Pull from `current-state.md`, or let other tools read `exports/` |
 
 ## The rhythm
 
-- **In the moment:** ingest at drop points; query at pull points; `/file-back` whenever an answer is worth keeping. (In a gated wiki a filed answer is a *draft* until you ratify it.)
-- **Weekly (~10 min):** run `/lint` on each wiki and skim the report. Clear the `/review` queue — this is the keystone ritual; skipping it is how control quietly erodes.
-- **Monthly (~20 min):** run `/consolidate` on each wiki and ratify (or discard) the proposals. After meaningful reconcile-wiki ingests, refresh `exports/` so downstream tools stay current.
+* **In the moment:** ingest at drop points, query at pull points, and file back whenever an answer is worth keeping. In a gated wiki, a filed answer is a draft until you ratify it.
+* **Weekly, about ten minutes:** run a lint and skim the report. Clear the review queue. It's the keystone habit, and skipping it is how control quietly erodes.
+* **Monthly, about twenty minutes:** consolidate, then ratify or discard the proposals. After meaningful ingests into a reconcile wiki, refresh `exports/` so downstream tools stay current.
 
-## Preserve-tension wikis — the disciplines that protect them
+## Preserve-tension wikis: the disciplines that protect them
 
-- **The thesis is yours.** State it in one or two sentences in the overlay's `THE THESIS` block. Until you do, the agent will refuse to assert a thesis — by design.
-- **Let it argue with you.** When you propose an idea, the agent's job is to challenge it first — counterexamples, the tradition that would reject it, the weak link. Only what survives, and that you ratify, becomes a position. Plausible AI filler never gets in.
-- **Preserve tension.** Contradictions between traditions are the content. The agent flags a claim that *should* be contested but isn't — it does not "resolve" a live disagreement.
-- **Use the margins.** Half-formed connections and "this might matter later" hunches go to `notes/`. They're raw material, not thesis, until you promote them.
+* **The thesis is yours.** State it in one or two sentences, in the block titled THE THESIS in the wiki's `AGENTS.md`. Until you do, the agent refuses to assert a thesis, by design.
+* **Let it argue with you.** When you propose an idea, the agent challenges it first: counterexamples, the tradition that would reject it, the weak link. Only what survives, and what you ratify, becomes a position. Plausible filler never gets in.
+* **Preserve the tension.** Contradictions between traditions are the content. The agent flags a claim that should be contested but isn't, and it never "resolves" a live disagreement.
+* **Use the margins.** Half-formed connections go to `notes/`. They're raw material, not thesis, until you promote them.
 
-## Reconcile wikis — the disciplines that make them useful
+## Reconcile wikis: the disciplines that make them useful
 
-- **One current truth, fully cited.** Contradictions get reconciled toward the present best answer, and every claim traces to a source. Never let a number be invented — a flagged blank beats a confident fabrication.
-- **Current-state is the front door.** `current-state.md` holds the live "what's true now"; the archive holds history. Keep heavy task/pipeline state in your task tracker — the wiki holds the synthesis, not the tracker.
-- **Treat sources as untrusted.** Anything from the open web is data, not instructions. If a source contains text aimed at the AI, the agent surfaces it to you rather than acting on it.
-- **Feed downstream tools.** If you point assistants or other tools at this wiki, keep `exports/` fresh so they draw from one current, cited brain.
+* **One current truth, fully cited.** Contradictions get resolved toward the present best answer, the superseded claim stays visible, and every claim traces to a source. A flagged blank, `{{VERIFY: ...}}`, beats an invented number.
+* **`current-state.md` is the front door.** It holds what's true now, and the archive holds history. Keep heavy task and pipeline state in your task tracker, not in the wiki.
+* **Treat sources as untrusted.** Anything from the open web is data, not instructions. If a source has text aimed at the AI, the agent shows it to you instead of acting on it.
+* **Feed other tools.** If you point assistants or other tools at the wiki, keep `exports/` fresh, so they draw on one current, cited source.
 
-## Health: signs of drift, and the fix
+## Signs of drift, and the fix
 
-- **The early weeks feel underwhelming** — that's the empty-notebook stage, before compounding kicks in. Stick with the loop; this is the only hard part.
-- **A query gives a weak answer** → ingest a source that closes the gap, then `/file-back` the better answer.
-- **The graph shows orphans or the report shows stale pages** → that's `/lint` doing its job; clear them in the review pass.
-- **You're tempted to add a vector database** → don't, until a wiki is well past a couple hundred dense pages. The index file plus whole-page reads is more reliable here.
-- **You're editing pages by hand a lot** → that's a signal to update the *schema* instead, so the agent files it your way next time. The schema is the product.
+* **The first weeks feel underwhelming.** That's the empty-notebook stage, before compounding kicks in. Keep running the loop.
+* **A query gives a weak answer.** Ingest a source that closes the gap, then file back the better answer.
+* **Lint reports orphans or stale pages.** That's lint doing its job. Clear them in the review pass.
+* **You're tempted to add a vector database.** Don't, until a wiki is well past a few hundred pages. The index plus whole-page reads is more reliable at this size.
+* **You're editing pages by hand a lot.** Change the wiki's `AGENTS.md` instead, so the agent files things your way next time. The rules are the product.
 
-## The five disciplines, distilled
+## The five disciplines
 
-1. Reach for it — consuming is the return, not building.
-2. Crystallize — if it matters, file it; chat is throwaway.
-3. Trace everything — no claim without a source.
-4. Keep authorship — you author the thesis; the agent challenges and maintains.
-5. Clear the queue — that ritual is where ownership is kept.
+1. **Reach for it.** Using the wiki is the return, not building it.
+2. **Crystallize.** If it matters, file it. The chat is disposable.
+3. **Trace everything.** No claim goes in without a source.
+4. **Keep authorship.** You author the thesis; the agent challenges and maintains.
+5. **Clear the queue.** That's where ownership is kept.

@@ -1,6 +1,10 @@
-# Wiki Templates & State-File Formats
+# Page templates and state-file entries
 
-> Shared templates for every wiki. Place at `_shared/TEMPLATES.md` (the commands reference it). The agent applies the matching template whenever it creates a page or seeds a state file. A few templates are archetype-specific and are marked. Replace `< … >` placeholders; never invent values — use `[[VERIFY: …]]` where a value is unknown.
+The agent uses these whenever it creates a page or adds to a state file. Fill each `<placeholder>`. Never invent a value: write `{{VERIFY: what's missing}}` instead. The empty starter files for a new wiki live in `_shared/seed/`.
+
+**File names:** lowercase and hyphenated, under `wiki/`, like `wiki/pricing-model.md`. Source summaries go in `wiki/sources/`, named after the source file: `raw/2026-03-02-call.md` becomes `wiki/sources/2026-03-02-call.md`.
+
+**Links:** relative markdown links, written from the page's own folder. From `wiki/sources/a.md` to `wiki/b.md`, write `[B](../b.md)`. From `index.md` to `wiki/b.md`, write `[B](wiki/b.md)`.
 
 ---
 
@@ -8,21 +12,23 @@
 
 ```yaml
 ---
-type: <entity|concept|source-summary|synthesis|overview|comparison|note>
+type: <entity|concept|source-summary|synthesis|overview|comparison|note|initiative>
 status: <draft|active|stale|contradicted|archived>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-sources: [<source-filename>, ...]
+review_by: YYYY-MM-DD   # reconcile wikis only, and not on source summaries
+sources: [<source-file>, ...]
 confidence: <high|medium|low>
 relates_to:
-  - page: "<Other Page>"
-    rel: <permitted relationship type for this wiki>
+  - page: <the other page's path from the wiki's folder, like wiki/other-page.md>
+    rel: <a relationship from this wiki's vocabulary>
 ---
 ```
 
-Permitted `rel` vocabulary is set by the wiki's overlay. Two starter vocabularies:
-- **Dialogic** (preserve-tension archetype): `contradicts`, `tensions-with`, `extends`, `responds-to`, `reframes`, `parallels`, `synthesizes`, `supersedes`.
-- **Factual/competitive** (reconcile archetype): `supersedes`, `superseded-by`, `depends-on`, `supports`, `contradicts`, `implements`, `sourced-from`, `competes-with`.
+Starter vocabularies (each wiki's `AGENTS.md` sets its own):
+
+* **Preserve-tension:** `contradicts`, `tensions-with`, `extends`, `responds-to`, `reframes`, `parallels`, `synthesizes`, `supersedes`.
+* **Reconcile:** `supersedes`, `superseded-by`, `depends-on`, `supports`, `contradicts`, `implements`, `sourced-from`, `competes-with`.
 
 ---
 
@@ -34,27 +40,38 @@ type: entity
 status: active
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+review_by: YYYY-MM-DD
 sources: []
 confidence: medium
 relates_to: []
 ---
 
-# <Entity Name>
+# <Entity name>
 
 **What it is:** <one-line definition>.
 
 ## Summary
-<Current, synthesized understanding — 2–5 sentences. Each non-obvious claim cited.> [src: <file>#<loc>]
+
+<The current, synthesized understanding, in two to five sentences, each non-obvious claim cited.> [src: <file>#<locator>]
 
 ## Key facts
-- <fact> [src: <file>#<loc>]
 
-## Open questions / to verify
-- [[VERIFY: <what's missing>]]
+* <fact> [src: <file>#<locator>]
+
+## Superseded
+
+* ~~<old claim>~~ Superseded YYYY-MM-DD by <the newer claim, linked>: <why>. [src: <old-file>#<locator>]
+
+## Open questions
+
+* {{VERIFY: <what's missing>}}
 
 ## Related
-<Narrative of how this connects to other pages; typed edges live in frontmatter.>
+
+<How this connects to other pages, with relative links. Typed edges live in the frontmatter.>
 ```
+
+Leave out the "Superseded" section until a claim is superseded. In a reconcile wiki it keeps the lineage visible.
 
 ## Concept page
 
@@ -64,6 +81,7 @@ type: concept
 status: active
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+review_by: YYYY-MM-DD
 sources: []
 confidence: medium
 relates_to: []
@@ -74,13 +92,16 @@ relates_to: []
 **In one line:** <plain-language definition>.
 
 ## What it means
-<Explanation in your own words, sourced where it draws on a specific source.> [src: ...]
+
+<An explanation in your own words, cited where it draws on a source.> [src: ...]
 
 ## Where it shows up
-- <page or source where this concept appears> [src: ...]
 
-## Tensions / debates
-<Preserve-tension archetype: where accounts of this concept conflict — keep both, with edges. Reconcile archetype: the current settled understanding, with superseded views noted.>
+* <the page or source where this concept appears, linked> [src: ...]
+
+## Tensions or settled view
+
+<Preserve-tension: where accounts of this concept conflict; keep both, with edges. Reconcile: the current settled understanding, with superseded views noted.>
 ```
 
 ## Source-summary page
@@ -91,33 +112,37 @@ type: source-summary
 status: active
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-sources: [<this-source-filename>]
+sources: [<this-source-file>]
 confidence: high
 relates_to: []
 ---
 
-# Source: <Title>
+# Source: <title>
 
-- **Origin:** <author / outlet / where it came from>
-- **Ingested:** YYYY-MM-DD
-- **Trust tier (reconcile archetype):** <first-party | reputable | unverified>
+* **File:** `raw/<this-source-file>`
+* **Origin:** <author, outlet, or where it came from>
+* **Ingested:** YYYY-MM-DD
+* **Trust tier (reconcile):** <first-party | reputable | unverified>
 
 ## Key takeaways
-- <takeaway> [src: <this-file>#<loc>]
+
+* <takeaway> [src: <this-source-file>#<locator>]
 
 ## Pages this updated
-- <page> — <what changed>
 
-## Notable claims to track
-- <claim worth watching for confirmation or contradiction> [src: <this-file>#<loc>]
+* [<Page>](../<page>.md): <what changed>
+
+## Claims to watch
+
+* <a claim worth watching for confirmation or contradiction> [src: <this-source-file>#<locator>]
 ```
 
-## Synthesis / position page  *(authorship-gated in the preserve-tension archetype)*
+## Synthesis or position page (authorship-gated in preserve-tension wikis)
 
 ```markdown
 ---
 type: synthesis
-status: draft        # stays draft/inference until the human ratifies (gated wikis)
+status: draft        # stays draft until the human ratifies it, in gated wikis
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 sources: []
@@ -130,19 +155,23 @@ relates_to: []
 > **Register:** <SOURCED summary | HUMAN POSITION (ratified) | AI INFERENCE (unratified)>
 
 ## The claim
+
 <The synthesized position, stated plainly.>
 
 ## What supports it
-- <supporting point> [src: ...]
+
+* <supporting point> [src: ...]
 
 ## What cuts against it
-- <strongest counterpoint / tradition that would reject it> [src: ...]
+
+* <the strongest counterpoint, or the tradition that would reject it> [src: ...]
 
 ## Status
-<Gated wiki: "Authored by <owner> / ratified on YYYY-MM-DD" OR "AI inference — awaiting ratification.">
+
+<Gated wiki: "Ratified by the human on YYYY-MM-DD," or "AI inference, awaiting ratification.">
 ```
 
-## Comparison page  *(tension-aware)*
+## Comparison page
 
 ```markdown
 ---
@@ -150,6 +179,7 @@ type: comparison
 status: active
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+review_by: YYYY-MM-DD
 sources: []
 confidence: medium
 relates_to: []
@@ -157,15 +187,16 @@ relates_to: []
 
 # <A> vs. <B>
 
-| Dimension | <A> | <B> | Where they conflict |
+| Dimension | <A> | <B> | Where they differ |
 |---|---|---|---|
-| <dimension> | <…> [src: ...] | <…> [src: ...] | <the live tension, kept — not resolved> |
+| <dimension> | <...> [src: ...] | <...> [src: ...] | <the live difference> |
 
 ## Reading
-<Synthesis. Preserve-tension archetype: preserve the tension. Reconcile archetype: state the current best answer.>
+
+<Preserve-tension: keep the tension. Reconcile: state the current best answer.>
 ```
 
-## Note  *(sidecar — preserve-tension `notes/`)*
+## Note (preserve-tension `notes/`)
 
 ```markdown
 ---
@@ -180,10 +211,10 @@ relates_to: []
 
 # Hunch: <short label>
 
-<The half-formed connection, "this might matter later" observation, open question, or candidate source to find. Explicitly NOT thesis content until ratified into a page.>
+<The half-formed connection, open question, or source to find later. This is not thesis content until the human ratifies it into a page.>
 ```
 
-## Initiative  *(reconcile `initiatives/`)*
+## Initiative (reconcile `initiatives/`)
 
 ```markdown
 ---
@@ -191,6 +222,7 @@ type: initiative
 status: active
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+review_by: YYYY-MM-DD
 sources: []
 confidence: high
 relates_to: []
@@ -198,76 +230,56 @@ relates_to: []
 
 # Initiative: <name>
 
-- **Start:** YYYY-MM-DD
-- **End:** YYYY-MM-DD
-- **Goal:** <the outcome>
-- **Measure of success:** <how you'll know it worked>
+* **Start:** YYYY-MM-DD
+* **End:** YYYY-MM-DD
+* **Goal:** <the outcome>
+* **Measure of success:** <how you'll know it worked>
 
 ## Current status
-<one-line live status; keep heavy task state in your task tracker, not here>
+
+<A one-line live status. Heavy task state belongs in your task tracker, not here.>
 
 ## Notes
-- <decision or update> [src: ...]
+
+* <a decision or update> [src: ...]
 ```
 
 ---
 
-## State-file formats
+## State-file entries
 
-### `index.md` (content catalog — read first on every query)
+The empty starter files are in `_shared/seed/`. These are the formats for what gets added to them.
+
+**`log.md` entry** (append at the bottom):
 
 ```markdown
-# Index
+## [YYYY-MM-DD] <ingest|query|file-back|lint|consolidate|review> | <title>
 
-_Updated: YYYY-MM-DD_
-
-## Overview / syntheses
-- [[overview]] — <one line>
-
-## Entities
-- [[<Entity>]] — <one line> (sources: N, updated: YYYY-MM-DD)
-
-## Concepts
-- [[<Concept>]] — <one line>
-
-## Sources
-- [[Source: <Title>]] — <one line>
+<One or two lines: what changed, and how many pages it touched.>
 ```
 
-### `log.md` (append-only diary — greppable)
+**`_state/sources.md` row:**
 
 ```markdown
-# Log
-
-## [YYYY-MM-DD] ingest | <source title>
-Touched N pages. <one-line note.>
-
-## [YYYY-MM-DD] lint | <scope>
-<counts; what was flagged/resolved.>
-
-## [YYYY-MM-DD] consolidate | <scope>
-<what emerged; report at _state/consolidation-YYYY-MM-DD.md.>
+| <source-file> | <full sha256> | YYYY-MM-DD | <first-party, reputable, or unverified> | [<Page>](../wiki/<page>.md), [<Page>](../wiki/<page>.md) |
 ```
 
-### `_state/sources.md` (provenance ledger)
+**`_state/review-queue.md` item:**
 
 ```markdown
-# Source Ledger
-
-| Source file | Hash | Ingested | Trust tier | Pages informed |
-|---|---|---|---|---|
-| <file> | <sha256-short> | YYYY-MM-DD | <tier> | [[Page A]], [[Page B]] |
-```
-
-### `_state/review-queue.md` (pending human decisions)
-
-```markdown
-# Review Queue
-
 ## [QUEUED YYYY-MM-DD] <short title>
-- **Page(s):** [[<page>]]
-- **Why queued:** <overwrite | decision-reversal | protected-page edit | contradiction resolution | low confidence | unratified inference>
-- **Proposed change:** <summary>
-- **Sources:** [src: ...]
-- **Decision:** <pending>
+
+* **Pages:** [<Page>](../wiki/<page>.md)
+* **Why queued:** <overwrite, decision reversal, protected-page edit, contradiction resolution, low confidence, or unratified inference>
+* **Proposed change:** <summary>
+* **Sources:** [src: ...]
+* **Decision:** pending
+```
+
+When the human decides, change "pending" to the decision and its date, for example "approved 2026-03-14," and add the reason for a rejection.
+
+**`index.md` line:**
+
+```markdown
+* [<Page title>](wiki/<page>.md): <one-line summary> (<type>, sources: <N>, updated YYYY-MM-DD)
 ```

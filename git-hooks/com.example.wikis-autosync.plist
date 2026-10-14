@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Optional macOS launchd agent that runs auto-sync.sh every 15 minutes.
-     EDIT the Label to one you own (reverse-DNS you control) and the two paths,
-     then:  cp com.example.wikis-autosync.plist ~/Library/LaunchAgents/
-            launchctl load -w ~/Library/LaunchAgents/com.example.wikis-autosync.plist -->
+<!-- Optional macOS launchd agent: runs git-hooks/auto-sync.sh every 15 minutes.
+     From your top folder, fill in the path and install it:
+       sed "s#<REPO-PATH>#$(pwd)#g" git-hooks/com.example.wikis-autosync.plist > ~/Library/LaunchAgents/com.example.wikis-autosync.plist
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.example.wikis-autosync.plist
+     To stop it:
+       launchctl bootout gui/$(id -u)/com.example.wikis-autosync
+     The label can stay as it is. Its output goes to .git/auto-sync.log. -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -11,15 +14,15 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/sh</string>
-        <string><VAULT-PATH>/git-hooks/auto-sync.sh</string>
+        <string><REPO-PATH>/git-hooks/auto-sync.sh</string>
     </array>
     <key>StartInterval</key>
     <integer>900</integer>
     <key>RunAtLoad</key>
     <true/>
     <key>StandardOutPath</key>
-    <string><VAULT-PATH>/.git/auto-sync.log</string>
+    <string><REPO-PATH>/.git/auto-sync.log</string>
     <key>StandardErrorPath</key>
-    <string><VAULT-PATH>/.git/auto-sync.log</string>
+    <string><REPO-PATH>/.git/auto-sync.log</string>
 </dict>
 </plist>

@@ -1,4 +1,4 @@
-# ── OS cruft ───────────────────────────────────────────────────────────────
+# OS clutter
 .DS_Store
 .DS_Store?
 ._*
@@ -7,25 +7,28 @@
 Thumbs.db
 desktop.ini
 
-# ── Obsidian ───────────────────────────────────────────────────────────────
-# The vault's .obsidian/ folder is per-vault. You may commit it (to share
-# appearance/plugins across machines) — but the bits below are per-machine
-# state that should never travel. Ignore just those, not the whole folder.
-.obsidian/workspace*
-.obsidian/cache
-.obsidian/*.bak
+# Obsidian: per-machine state. The **/ prefix matches at any depth, so a
+# vault opened on a wiki's own folder is covered too. The rest of .obsidian/
+# may be committed, to share settings across machines.
+**/.obsidian/workspace*
+**/.obsidian/cache
+**/.obsidian/*.bak
 
-# ── Editors / tooling ──────────────────────────────────────────────────────
+# Agent and editor files that belong to one machine or one person
+**/.claude/settings.local.json
+CLAUDE.local.md
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# ── Wiki sources (raw/) ────────────────────────────────────────────────────
-# By design, sources ARE committed — git is the backup, and the source ledger
-# assumes every source is version-controlled. So raw/ is NOT ignored here.
-# If you'd rather keep heavy binary media out of history, opt in per-type:
+# A staging folder for the kit's own maintenance
+_incoming/
+
+# Sources in raw/ ARE committed: git is the backup, and the source ledger
+# assumes every source is under version control. To keep heavy media out
+# of history, opt in per type:
 # */raw/**/*.mp4
 # */raw/**/*.mov
 # */raw/**/*.zip
