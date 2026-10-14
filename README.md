@@ -1,95 +1,98 @@
-# LLM Wiki Federation — Starter Kit
+# LLM Wiki Starter Kit
 
-A portable framework for running **LLM-maintained markdown wikis** — knowledge bases that *compile and keep* your synthesis instead of re-deriving it on every question. An agent (e.g. Claude Code) maintains the pages; you curate sources and ask the questions.
+A knowledge base your AI keeps current. You feed it sources. It writes linked, cited pages and keeps them up to date. When an answer is worth keeping, you file it back, so your thinking compounds instead of starting over in every new chat.
 
-This is a **clean, genericized kit** — the reusable protocol, templates, archetypes, commands, and git plumbing, with no one else's content in it. Everything is placeholder-driven; you supply the domains.
+It's plain markdown and git. There's no database, no server, and nothing to lock you in. It's built for any AI coding agent that reads `AGENTS.md`, including Claude Code and Codex. See [COMPATIBILITY.md](COMPATIBILITY.md) for what's been tested.
 
-> **Fastest path:** open this folder in Claude Code and say **"Read `START-HERE.md` and build my federation."** The agent interviews you for a few decisions and scaffolds the whole thing. Prefer to do it by hand? Read [SETUP.md](SETUP.md).
+**New to the idea?** Read the [primer](docs/Arcqus-AI-LLM-Wiki-Primer.pdf) first. It takes about twenty minutes and assumes no background.
 
-> **Credit.** The core pattern — have an LLM *incrementally compile and maintain a persistent, interlinked wiki* between you and your raw sources, rather than retrieving-and-forgetting (RAG) — is adapted from Andrej Karpathy's public "LLM Wiki" idea ([gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), April 2026). This kit is one opinionated implementation of it.
+Built by Dusty Holcomb at Arcqus.AI. The core pattern comes from Andrej Karpathy's public [LLM Wiki idea](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+
+## Before you start
+
+**You'll need:**
+
+* **An AI coding agent that can read and edit files in a folder.**
+  * **Claude Code** requires a Pro, Max, Team, Enterprise, or Console account; the free plan doesn't include it. It also runs inside the Claude desktop app (on Pro, Max, Team, or Enterprise), so you don't need a terminal.
+  * **Codex** is included in ChatGPT plans, including Free and Go. On Free and Go, OpenAI offers it in the ChatGPT desktop app, subject to rollout. You can also sign in with an API key.
+* **Git.** On Windows, install Git for Windows, which includes Git Bash, the shell you'll use for the kit's commands.
+* **Optional:** Obsidian (free) to read your wiki, and a GitHub account to back it up.
+
+**A word on privacy:** when your agent reads a source, that content goes to the AI provider under your account's terms. Check those terms before you ingest anything client-confidential.
+
+## Get it running
+
+1. Click **Use this template**, then **Create a new repository**, and choose **Private**. Then get your copy onto your computer: on your new repository's page, click **Code**, then **Open with GitHub Desktop**, or clone it with git.
+   * **No GitHub account?** On this page, click **Code**, then **Download ZIP**, and unzip it anywhere.
+   * **Prefer git?** A plain `git clone` of this repository works too. START-HERE disconnects your copy from this repository for you.
+2. Open that folder in your AI agent.
+3. Type: **"Read START-HERE.md and build my first wiki."**
+
+The agent asks a few questions, builds your first wiki, and then walks you through feeding it three or four sources. Once it's built, always start your agent **inside that wiki's folder**. That's how Claude Code and Codex pick up both the shared rules and your wiki's rules. Using another agent? [COMPATIBILITY.md](COMPATIBILITY.md) says where to start it.
+
+Prefer to build it by hand? Follow [SETUP.md](SETUP.md).
+
+## The four moves
+
+1. **Ingest.** Drop a source in `raw/` and ask the agent to ingest it. It updates every page the source touches.
+2. **Query.** Ask your wiki a question. You get an answer with citations back to your sources.
+3. **File back.** When an answer is worth keeping, save it as a page. This is the move that makes it compound.
+4. **Lint.** Once a week, ask for a health check. It catches contradictions, stale claims, and orphan pages before they pile up.
+
+You don't need special commands: ask in plain words, like "ingest raw/pricing-notes.md." Agents that support skills also offer shortcuts named `wiki-ingest`, `wiki-query`, and so on. Two more operations keep a wiki healthy over time, **consolidate** and **review**. The [operator's guide](_shared/OPERATORS-GUIDE.md) covers them, along with the weekly rhythm.
+
+**See one before you build one:** the [sample wiki](examples/README.md) is small, fully worked, and fictional. You can browse it on GitHub in two minutes.
 
 ---
+
+## Why you might want more than one wiki
+
+Start with one. Once it's working, you may find a second domain that needs the opposite default on the most important question a wiki's rules answer: **is a contradiction something to resolve, or something to keep?**
+
+* **Reconcile** wikis hold one current, cited answer per question. They suit competitive intelligence, reference material, and anything factual or operational. A contradiction is a defect to fix.
+* **Preserve-tension** wikis keep competing views in dialogue. They suit a worldview, a thesis, or a research field, where the tension between views is the content. A contradiction is information to keep.
+
+A set of wikis that shares one set of rules is a **federation**. The shared mechanics live in the top folder's `AGENTS.md`, and a short `AGENTS.md` in each wiki sets its policy. The wikis never link to each other, because clean separation is the point. To add a wiki, follow [ADDING-A-WIKI.md](_shared/ADDING-A-WIKI.md).
 
 ## The one idea
 
 > A search system makes your documents **findable**. A wiki makes your thinking **cumulative**.
 
-| | RAG (uploads, NotebookLM, vector search) | This wiki |
+| | Search over your files (uploads, vector search) | This wiki |
 |---|---|---|
-| What it does | Retrieves fragments at query time, answers, forgets | Compiles synthesis once, then keeps it current |
-| What accumulates | Nothing — re-pieces sources every time | Everything — cross-references, contradictions, the evolving picture |
-| What you own | A search index | A body of synthesized thinking, in plain text, that's yours |
+| What it does | Finds fragments when you ask, answers, and forgets | Writes the synthesis once, then keeps it current |
+| What builds up | Nothing: it re-reads the sources every time | Everything: links, contradictions, and the evolving picture |
+| What you own | A search index | A body of synthesized thinking, in plain text |
 
-Raw sources are *episodic memory* (immutable experience). The wiki is *semantic memory* (the integrated web of what you actually know). The agent does the consolidation.
+Your raw sources are the record of what happened. The wiki is what you've made of it. The agent does the filing.
 
-## Why a "federation" and not one wiki
-
-You'll often want more than one wiki, and the wikis need **opposite defaults** on the single most important question a wiki schema governs: **is a contradiction something to _resolve_ or something to _preserve_?**
-
-- **Reconcile archetype** — one current, cited best answer per question. For competitive intel, reference, product, or any factual/operational domain. *(Contradictions are defects to resolve.)*
-- **Preserve-tension archetype** — keeps competing views in dialogue. For a worldview, thesis, or research domain where the tension between views *is* the content. *(Contradictions are information to keep.)*
-
-A **federation** = one shared base of portable mechanics + a thin per-wiki overlay that sets the divergent policy. The wikis never cross-link; clean separation is the whole value.
-
-## What's in this kit
+## What's in the kit
 
 ```
-wiki-federation-starter-kit/
-├── START-HERE.md                   ← point Claude Code at this to auto-build
-├── README.md                       ← you are here (the concept)
-├── SETUP.md                        ← step-by-step manual install
-├── CONNECT-OBSIDIAN-AND-GITHUB.md  ← wire up the reading surface + backup/sync
-├── CLAUDE.md                       ← root federation registry + boundary rules (template)
-├── LICENSE                         ← MIT
+├── START-HERE.md                    the agent's build spec
+├── SETUP.md                         the same build, by hand
+├── CONNECT-OBSIDIAN-AND-GITHUB.md   reading in Obsidian, backup on GitHub
+├── COMPATIBILITY.md                 what each AI agent loads, with sources
+├── AGENTS.md                        the shared rules every wiki follows
+├── CLAUDE.md                        one line that points Claude Code at AGENTS.md
 ├── _shared/
-│   ├── wiki-base.md                ← the shared protocol every wiki inherits
-│   ├── TEMPLATES.md                ← page + state-file templates
-│   ├── ADDING-A-WIKI.md            ← the recipe for stamping out a new wiki
-│   └── OPERATORS-GUIDE.md          ← the day-to-day operating manual (for the human)
-├── archetypes/
-│   ├── reconcile-overlay.md        ← copy → <wiki>/CLAUDE.md for a reconcile wiki
-│   └── preserve-tension-overlay.md ← copy → <wiki>/CLAUDE.md for a preserve-tension wiki
-├── commands/                       ← the six operations (copy → <wiki>/.claude/commands/)
-│   └── ingest.md · query.md · lint.md · consolidate.md · file-back.md · review.md
-└── git-hooks/
-    ├── pre-commit                  ← blocks a commit that spans two wikis
-    ├── post-commit                 ← auto-push to your remote
-    ├── install.sh                  ← installs the hooks (run once per clone)
-    ├── auto-sync.sh                ← optional periodic pull/push safety net
-    └── com.example.wikis-autosync.plist  ← optional launchd agent (macOS)
+│   ├── operations/                  the six procedures: ingest, query, file back, lint, consolidate, review
+│   ├── seed/                        empty starter files for a new wiki
+│   ├── TEMPLATES.md                 page templates
+│   ├── OPERATORS-GUIDE.md           the day-to-day manual
+│   └── ADDING-A-WIKI.md             how to add another wiki
+├── archetypes/                      the rules for the two kinds of wiki
+├── examples/sample-wiki/            a small, fully worked, fictional wiki
+├── .agents/skills/  .claude/skills/ optional wiki-* shortcuts
+├── git-hooks/                       optional: one wiki per commit, and auto-push to your backup
+├── scripts/check-kit.sh             the maintainer's release checks
+└── docs/                            the companion primer
 ```
-
-## The three verbs (the whole job)
-
-1. **Feed it** — `/ingest` a source; the agent folds it into every page it touches.
-2. **Ask it** — `/query`; get a cited answer synthesized from the pages.
-3. **Never let a good answer die in a chat** — `/file-back` so it compounds.
-
-Everything else (`/lint`, `/consolidate`, `/review`) keeps the loop reliable.
-
-## Quick start
-
-Read **`SETUP.md`**. In short: create a folder + git repo, drop `CLAUDE.md` and `_shared/` at the root, stamp out your first wiki from an archetype, install the git hooks, and prove the loop with a few sources.
-
-## Requirements
-
-- An agentic coding tool that reads `CLAUDE.md` files up the directory tree and supports slash-commands in `.claude/commands/` (this kit is written for **Claude Code**).
-- `git`. A markdown reader with a graph view (e.g. **Obsidian**) is nice for browsing but not required.
-- No vector database, no embedding pipeline, no server. Plain markdown + git is the entire stack.
-
-To connect **Obsidian** (the reading surface) and **GitHub** (backup + auto-push sync) to your build, see **[CONNECT-OBSIDIAN-AND-GITHUB.md](CONNECT-OBSIDIAN-AND-GITHUB.md)** — it walks through both from zero, including the GitHub auth the git hooks need.
-
----
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Clone it, fork it, build your own federation on it. Attribution is appreciated but not required.
+MIT. See [LICENSE](LICENSE). Copy it, adapt it, and build your own wikis on it. Attribution is appreciated but not required.
 
-## The four lines
+---
 
-(estate maintenance protocol, ratified 2026-08-23)
-
-- **Purpose:** the public, genericized starter kit for LLM-maintained wiki federations: the portable protocol, templates, archetypes, commands, and git plumbing, with no one's content in it.
-- **Owner:** Dusty Holcomb.
-- **Recovery path:** `git clone https://github.com/wareagledusty/wiki-federation-starter-kit.git`. That is the whole path: a public template holds no secrets, no worker, and no state, so `RECOVERY.md` is waived by ruling (2026-08-23). The shipped `git-hooks/` are payload for stamped federations, deliberately not installed in this repository.
-- **Retirement condition:** retired only by Dusty's ruling, when the kit is superseded or archived; being public, retirement means archiving the repository, never deleting it, so existing clones and links keep resolving.
+Maintainers: the project's purpose, owner, recovery path, and retirement condition are in [MAINTAINERS.md](MAINTAINERS.md).
