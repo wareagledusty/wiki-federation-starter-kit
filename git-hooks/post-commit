@@ -1,23 +1,63 @@
 #!/bin/sh
 #
-# Federation auto-push.
-# After every commit, push to origin/main so committed work reaches your remote
-# with no manual step. Runs for every thread sharing this repo. Concurrency-safe
-# — threads edit different wiki folders, so a rebase never conflicts — and it
-# never blocks the commit (always exits 0; a failed push is retried by the next
-# commit).
+# Auto-push after every commit, so committed work reaches your remote with
+# no manual step. It never blocks a commit: it always exits 0. Every
+# attempt is logged to .git/auto-push.log, and a failure also prints a
+# one-line warning, so a push that didn't happen can be found.
 #
-# Canonical copy lives in version control: git-hooks/post-commit
-# Reinstall after a fresh clone:  sh git-hooks/install.sh
+# Install or reinstall:  sh git-hooks/install.sh
 #
-if git push origin HEAD:main 2>/dev/null; then
+gitdir=$(git rev-parse --git-dir 2>/dev/null) || exit 0
+log="$gitdir/auto-push.log"
+
+note() {
+  printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$log"
+  if [ "$(wc -l < "$log")" -gt 500 ]; then
+    tail -n 200 "$log" > "$log.tmp" && mv "$log.tmp" "$log"
+  fi
+}
+
+# Do nothing while a rebase is replaying commits. This hook's own
+# "pull --rebase" below would otherwise run it again for every replayed
+# commit, pushing half-rebased history.
+if [ -d "$gitdir/rebase-merge" ] || [ -d "$gitdir/rebase-apply" ]; then
   exit 0
 fi
 
-# Push rejected = another thread pushed first. Rebase onto the remote and retry once.
-if git pull --rebase --autostash origin main 2>/dev/null; then
-  git push origin HEAD:main 2>/dev/null
-else
-  git rebase --abort 2>/dev/null   # never leave a half-finished rebase behind
+# Do nothing on a detached HEAD: there's no branch to push.
+branch=$(git symbolic-ref --quiet --short HEAD) || exit 0
+
+if ! url=$(git remote get-url origin 2>/dev/null); then
+  note "skipped: no origin remote yet (branch $branch)"
+  exit 0
 fi
+
+case "$url" in
+  *wareagledusty/wiki-federation-starter-kit*)
+    note "skipped: origin is the public starter kit, not your copy"
+    echo "auto-push: not pushing, because origin is the public starter kit. Run: git remote remove origin" >&2
+    exit 0 ;;
+esac
+
+# Fail fast instead of waiting for a password nobody will type.
+GIT_TERMINAL_PROMPT=0
+export GIT_TERMINAL_PROMPT
+
+if out=$(git push origin "$branch" 2>&1); then
+  note "pushed: $branch"
+  exit 0
+fi
+
+# Rejected because the remote moved on? Rebase onto it and retry once.
+if git pull --rebase --autostash origin "$branch" >/dev/null 2>&1; then
+  if out=$(git push origin "$branch" 2>&1); then
+    note "pushed: $branch (after rebasing onto origin)"
+    exit 0
+  fi
+else
+  git rebase --abort >/dev/null 2>&1
+fi
+
+note "FAILED: push of $branch: $(printf '%s' "$out" | tail -n 2 | tr '\n' ' ')"
+echo "auto-push: the push to origin failed. Your commit is safe locally. See .git/auto-push.log" >&2
 exit 0

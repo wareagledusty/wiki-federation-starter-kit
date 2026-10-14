@@ -1,43 +1,49 @@
 #!/bin/sh
 #
-# Federation anti-conflation guard.
-# Blocks any single commit that spans two or more wikis, so concurrent agent
-# threads (one per wiki) can never merge each other's work into one commit.
-# "Wikis" = top-level directories except `_shared` and dotfolders.
+# One commit, one wiki.
 #
-# Canonical copy lives in version control: git-hooks/pre-commit
-# Reinstall after a fresh clone:  sh git-hooks/install.sh
-# Deliberate cross-cutting commit?  git commit --no-verify
+# Blocks a commit that touches two or more wikis, so separate threads of
+# work never land in a single commit. A top-level folder counts as a wiki
+# only if it holds its own AGENTS.md, in the working tree or in HEAD.
+# These never count: top-level files, _shared/, archetypes/, git-hooks/,
+# scripts/, docs/, examples/, dotfolders, and any folder starting with "_".
+#
+# Install or reinstall:      sh git-hooks/install.sh
+# Cross wikis on purpose:    git commit --no-verify
 #
 set -u
 
-staged=$(git diff --cached --name-only)
-[ -z "$staged" ] && exit 0
+# --no-renames lists both sides of a move, so moving a page between wikis counts.
+staged=$(git diff --cached --name-only --no-renames)
+[ -n "$staged" ] || exit 0
 
-# Distinct top-level wiki dirs among staged files (skip _shared, dotfolders, root files).
-wikis=$(printf '%s\n' "$staged" \
-  | awk -F/ 'NF > 1 { print $1 }' \
-  | grep -v '^_shared$' \
-  | grep -v '^\.' \
-  | sort -u)
+dirs=$(printf '%s\n' "$staged" | awk -F/ 'NF > 1 { print $1 }' | sort -u)
 
-count=$(printf '%s\n' "$wikis" | grep -c .)
+wikis=""
+count=0
+while IFS= read -r dir; do
+  [ -n "$dir" ] || continue
+  case "$dir" in
+    _*|.*|archetypes|git-hooks|scripts|docs|examples) continue ;;
+  esac
+  if [ -f "$dir/AGENTS.md" ] || git cat-file -e "HEAD:$dir/AGENTS.md" 2>/dev/null; then
+    wikis="$wikis $dir"
+    count=$((count + 1))
+  fi
+done <<EOF
+$dirs
+EOF
 
-if [ "$count" -gt 1 ]; then
-  echo "──────────────────────────────────────────────────────────────"
-  echo "✋ Commit blocked — this commit touches more than one wiki:"
-  printf '%s\n' "$wikis" | sed 's/^/     • /'
+[ "$count" -gt 1 ] || exit 0
+
+{
+  echo "Commit blocked: it touches more than one wiki:"
+  for w in $wikis; do echo "    $w/"; done
   echo ""
-  echo "Each wiki must be committed on its own (anti-conflation)."
-  echo "Stage and commit ONE wiki at a time instead:"
+  echo "Commit each wiki on its own:"
+  echo "    git reset"
+  for w in $wikis; do echo "    git add $w/ && git commit -m \"$w: <what changed>\""; done
   echo ""
-  echo "     git reset"
-  echo "     git add wiki-a/  && git commit -m 'wiki-a: …'"
-  echo "     git add wiki-b/  && git commit -m 'wiki-b: …'"
-  echo ""
-  echo "Deliberate cross-cutting commit? Re-run with:  git commit --no-verify"
-  echo "──────────────────────────────────────────────────────────────"
-  exit 1
-fi
-
-exit 0
+  echo "Crossing wikis on purpose? Run: git commit --no-verify"
+} >&2
+exit 1

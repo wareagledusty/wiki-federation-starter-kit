@@ -1,0 +1,4 @@
+# Keep the git hooks and shell scripts on LF line endings, even on Windows,
+# so their first line (#!/bin/sh) keeps working after checkout.
+git-hooks/* text eol=lf
+*.sh text eol=lf
