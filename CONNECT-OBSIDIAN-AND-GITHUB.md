@@ -1,70 +1,55 @@
-# Connecting Obsidian and GitHub
+# Connect Obsidian and GitHub
 
-Your federation is just **plain markdown in a git repo**. Nothing here is required to *run* the wikis — Claude Code alone can do everything. But two integrations make it pleasant and safe:
+Your wiki is plain markdown in a git repository, and your AI agent can run it on its own. Two optional tools make it nicer to read and safer to keep:
 
-- **Obsidian** = where you *read* the wiki (browse, follow links, see the graph). It never talks to GitHub; it just opens the folder.
-- **GitHub** = where the wiki is *backed up and synced* (and, via the git hooks, where every commit auto-pushes).
+* **Obsidian** is where you *read*: browse pages, follow links, and see the graph. It only reads the folder, and it never talks to GitHub.
+* **GitHub** is where your wiki is *backed up*. With the kit's git hooks, every commit pushes there on its own.
 
-Think of it as **three windows onto one folder:**
-
-| Window | Role | Talks to |
+| Window | What it's for | What it touches |
 |---|---|---|
-| **Claude Code** (opened at the vault root) | Where you *work* — ingest, query, file-back | The files + git |
-| **Obsidian** (vault = the same folder) | Where you *read* — browse and navigate | The files only |
-| **GitHub** (a private repo) | Backup + sync across machines | git (via the hooks) |
+| Your AI agent, started **inside the wiki's folder** | Working: ingest, query, file back, lint | The files and git |
+| Obsidian, with the wiki's folder as its vault | Reading and browsing | The files only |
+| GitHub, a private repository | Backup, and sync across machines | Git, through the hooks |
 
-All three point at the **same folder**. There's no import/export between them — they're just different lenses on the same markdown.
-
----
-
-## Part A — Obsidian (the reading surface)
-
-1. **Install Obsidian** — free, from [obsidian.md](https://obsidian.md). Desktop (macOS/Windows/Linux).
-2. **Open the vault** — Obsidian → *Open folder as vault* → select your **federation root** (the folder that contains `_shared/` and your wiki folders). The whole federation is one vault.
-3. **Read here; don't edit here.** The operating model is that the *agent* writes pages and you *read* them. Browsing, following `[[links]]`, and the graph view are what Obsidian is for. (Editing by hand isn't forbidden, but if you find yourself doing it a lot, that's a signal to update the *schema* instead — see `_shared/OPERATORS-GUIDE.md`.)
-4. **Graph view** — the icon in the left ribbon shows pages as nodes and `[[links]]` as edges. *Local Graph* shows one page's neighborhood. This is how the wiki's structure becomes visible.
-5. **Recommended plugin — Dataview.** The page frontmatter uses typed `relates_to` edges (e.g. `contradicts`, `supersedes`). Dataview turns those into queryable tables/lists. *Settings → Community plugins → Browse → Dataview → Install → Enable.* Optional but it's what makes the typed edges pay off.
-6. **Obsidian's own config** lives in a `.obsidian/` folder inside the vault. It's per-vault, not per-wiki. You can commit it (to share appearance/plugins across machines) or ignore it — the kit's `.gitignore` already ignores the per-machine bits (`workspace*`, `cache`).
-
-> **Obsidian does not sync to GitHub.** Some people confuse the two. Obsidian just reads the folder; **git** is what moves your work to GitHub. That's Part B.
+All three look at the same files. Nothing gets imported or exported between them.
 
 ---
 
-## Part B — GitHub (backup + sync)
+## Part A. Obsidian (for reading)
 
-This is what the `git-hooks/` push to. Do it once per vault.
+1. **Install Obsidian** from [obsidian.md](https://obsidian.md). It's free for all uses, including commercial use.
+2. **Open your wiki as a vault.** In Obsidian, choose **Open folder as vault**, and pick your wiki's folder, for example `my-wiki/`. You'll get a clean graph of just that wiki. You can open the top folder instead to see every wiki at once, but you'll see the kit's own files too.
+3. **Read here, and let the agent write.** If you find yourself editing pages by hand a lot, change the rules in the wiki's `AGENTS.md` instead, so the agent does it your way next time.
+4. **The graph view** shows pages as dots and links as lines. A page's local graph shows just its neighborhood.
+5. **Optional: the Dataview plugin** turns each page's typed `relates_to` edges into tables you can query. Go to Settings, Community plugins, Browse, find Dataview, then Install and Enable.
+6. **Obsidian's own settings** live in a `.obsidian/` folder inside the vault. The kit's `.gitignore` already skips the parts that change on every machine.
 
-### 1. Make it a git repo (if it isn't already)
+---
+
+## Part B. GitHub (for backup)
+
+Run every command from the kit's top folder. On Windows, use Git Bash.
+
+### 1. Sign in so pushes work unattended
+
+The hooks push after every commit, with nobody there to type a password. So use a sign-in that works on its own.
+
+**Recommended: GitHub CLI over HTTPS.** Install the GitHub CLI from [cli.github.com](https://cli.github.com), then run:
 
 ```sh
-cd <your-vault-root>
-git init
-git add . && git commit -m "initial federation"
+gh auth login
 ```
 
-### 2. Create a **private** repo on GitHub
+Choose **GitHub.com**, then **HTTPS**, and answer **yes** when it asks whether to authenticate Git with your GitHub credentials. GitHub CLI then stores your Git credentials, and pushes from the hook go through without a prompt. If you skipped that question, run `gh auth setup-git`. This sign-in can push to every repository your GitHub account can write to.
 
-On github.com → *New repository* → name it → **Private** → **do not** add a README/.gitignore (you already have files) → *Create*.
+**Alternative: an SSH deploy key** that reaches only this one repository. Make a key just for this wiki, with no passphrase so the hook can use it unattended:
 
-### 3. Connect your local vault to it — pick ONE auth method
-
-**Option 1 — `gh` CLI (easiest, interactive).**
 ```sh
-gh auth login                 # follow the browser prompt, once per machine
-gh repo view                  # confirm you're authed
-git remote add origin https://github.com/<you>/<repo>.git
-git push -u origin main
-```
-
-**Option 2 — SSH (best for the auto-push hooks, which run unattended).**
-The hooks push on *every commit* with no chance to type a password, so SSH-key auth is the reliable choice.
-```sh
-# generate a key dedicated to this vault (no passphrase, so hooks can push unattended)
 ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_mywiki -N "" -C "mywiki"
 ```
-Add the **public** key (`~/.ssh/id_ed25519_mywiki.pub`) to GitHub as a **deploy key** with write access: repo → *Settings → Deploy keys → Add deploy key* → paste the `.pub` contents → check **Allow write access**. (A deploy key grants access to just this one repo — safer than an account-wide key.)
 
-Then give it a host alias so git uses the right key non-interactively — add to `~/.ssh/config`:
+On GitHub, open your repository's **Settings**, then **Deploy keys**, then **Add deploy key**. Paste the contents of `~/.ssh/id_ed25519_mywiki.pub`, and check **Allow write access**. Then add this to `~/.ssh/config`, so git uses that key for this repository:
+
 ```
 Host github-mywiki
     HostName github.com
@@ -72,61 +57,96 @@ Host github-mywiki
     IdentityFile ~/.ssh/id_ed25519_mywiki
     IdentitiesOnly yes
 ```
-And point the remote at the alias:
+
+With a deploy key, your remote's address looks like `git@github-mywiki:<you>/<repo>.git` instead of `https://github.com/<you>/<repo>.git`.
+
+### 2. Connect your own private repository
+
+First, see what's connected now:
+
 ```sh
-git remote add origin git@github-mywiki:<you>/<repo>.git
+git remote -v
+```
+
+**If it shows your own repository** (you used **Use this template** and cloned your copy), you're already connected. With a deploy key, point it at the key's address:
+
+```sh
+git remote set-url origin git@github-mywiki:<you>/<repo>.git
+```
+
+**If it shows nothing** (you downloaded the ZIP, or START-HERE disconnected the public kit), create a new **private** repository on GitHub with no README and no `.gitignore`. Then connect it and push for the first time:
+
+```sh
+git remote add origin https://github.com/<you>/<repo>.git
+git branch -M main
 git push -u origin main
 ```
 
-**Option 3 — HTTPS + Personal Access Token.** Works, but for unattended hook pushes you must cache the token in a credential helper (macOS Keychain, etc.). If that sentence isn't obviously easy, use Option 1 or 2 instead.
+With a deploy key, use `git@github-mywiki:<you>/<repo>.git` in the first line instead.
 
-### 4. Turn on the auto-push hooks
+**If it shows `wareagledusty/wiki-federation-starter-kit`,** you're still connected to the public kit. Disconnect it with `git remote remove origin`, then follow the steps above.
 
-Once the remote pushes by hand, wire up the plumbing so you never push manually again:
+Check that the first push worked by hand: your files should show up on GitHub. If you were already connected, run `git push` once to confirm.
+
+### 3. Turn on the hooks
+
 ```sh
-sh git-hooks/install.sh       # installs pre-commit + post-commit into .git/hooks
+sh git-hooks/install.sh
 ```
-- **pre-commit** blocks any commit that spans two wikis (keeps histories clean).
-- **post-commit** pushes to your remote after every commit — *commit = backed up.*
 
-The hooks push to `origin/main` by default; if your branch or remote differ, edit `git-hooks/post-commit`. Pushes are non-blocking (a failed push never blocks the commit; it's retried on the next one).
+* **pre-commit** blocks any commit that touches two wikis.
+* **post-commit** pushes every commit to `origin`, so a commit means a backup. A failed push never blocks your work. It's recorded in `.git/auto-push.log`, and the hook prints a one-line warning.
 
-### 5. (Optional, macOS) Periodic self-healing sync
+Hooks aren't copied when you clone, so run this once on each computer.
 
-`git-hooks/auto-sync.sh` + `com.example.wikis-autosync.plist` run a pull+push every 15 minutes so the repo recovers from a push that failed while offline and pulls in edits from another machine. Edit the placeholder paths and the label, then:
+### 4. Optional, macOS: background sync
+
+`git-hooks/auto-sync.sh` pulls and pushes every 15 minutes, so the repository catches up after a push that failed offline, and picks up changes from another computer. To set it up, fill in your folder's path and load it:
+
 ```sh
-cp git-hooks/com.example.wikis-autosync.plist ~/Library/LaunchAgents/
-launchctl load -w ~/Library/LaunchAgents/com.example.wikis-autosync.plist
+sed "s#<REPO-PATH>#$(pwd)#g" git-hooks/com.example.wikis-autosync.plist > ~/Library/LaunchAgents/com.example.wikis-autosync.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.example.wikis-autosync.plist
+```
+
+Its output goes to `.git/auto-sync.log`. To stop it:
+
+```sh
+launchctl bootout gui/$(id -u)/com.example.wikis-autosync
 ```
 
 ---
 
-## How it all connects to "the LLM build"
+## How it fits together
 
-1. You open **Claude Code at the vault root.** It auto-loads the `CLAUDE.md` files up the tree, so the agent behaves as the trained maintainer for whichever wiki you name.
-2. You **ingest / query / file-back.** The agent writes markdown pages and **commits** them.
-3. The **post-commit hook pushes** that commit to **GitHub** — automatically. Your synthesis is backed up within seconds.
-4. You open **Obsidian on the same folder** to read and navigate what the agent built.
+1. You start your agent **inside the wiki's folder**. That's how Claude Code and Codex load both the shared rules and your wiki's rules. For other agents, see [COMPATIBILITY.md](COMPATIBILITY.md).
+2. You ingest, query, file back, and lint. The agent writes markdown pages and commits them.
+3. The post-commit hook pushes each commit to GitHub, so your work is backed up within seconds.
+4. You open Obsidian on the same folder to read and browse what the agent built.
 
-One folder. Claude Code writes it, git+GitHub back it up, Obsidian reads it. That's the whole loop.
+One folder: the agent writes it, git and GitHub back it up, and Obsidian reads it.
 
 ---
 
-## Working on more than one machine
+## Working on a second computer
 
-Because it's a normal git repo, a second machine is just:
+It's a normal git repository. On the second computer, sign in first (Part B, step 1), because the repository is private. Then clone it and install the hooks:
+
 ```sh
-git clone <your-repo-url> my-wikis
+git clone https://github.com/<you>/<repo>.git my-wikis
 cd my-wikis
-sh git-hooks/install.sh        # hooks aren't cloned; reinstall once per machine
+sh git-hooks/install.sh
 ```
-Then *Open folder as vault* in Obsidian on that machine too. The optional auto-sync agent (Part B §5) keeps both machines reconciled.
+
+Then open the wiki's folder as a vault in Obsidian there, too. The optional background sync keeps both computers in step.
 
 ---
 
 ## Troubleshooting
 
-- **"Committed, but nothing on GitHub."** The remote or auth isn't set. Run `git push` by hand and read the error; fix per Part B §3. The hook swallows push errors on purpose (so it never blocks your work), so a broken remote fails silently — always confirm the first push by hand.
-- **Hook push asks for a password / hangs.** You're on HTTPS without a cached credential, or an SSH key with a passphrase. Switch to Option 2 with an empty-passphrase deploy key.
-- **`git commit` blocked: "touches more than one wiki."** Working as designed — stage and commit one wiki folder at a time. Deliberate cross-cutting commit? `git commit --no-verify`.
-- **Obsidian shows the `.obsidian`/`_state` folders as clutter.** *Settings → Files & Links → Excluded files*, or just ignore them; they're supposed to be there.
+* **"I committed, but nothing's on GitHub."** Read the log with `tail .git/auto-push.log`. Then run `git push` by hand and read its error. Most often the sign-in isn't set up (step 1), or the repository isn't connected (step 2).
+* **"My agent works in a sandbox."** Some agents run commands in a sandbox with network access off, so the hook's push can't reach GitHub. Your commits are safe on your computer. Push by hand with `git push` from a normal terminal, or set up the background sync. See [COMPATIBILITY.md](COMPATIBILITY.md) for your agent.
+* **"error: remote origin already exists."** You're already connected. Run `git remote -v` to see where. If it's the public kit, run `git remote remove origin` and connect your own repository.
+* **"src refspec main does not match any."** Your branch has a different name. Run `git branch -M main`, then push again.
+* **"The push failed with an authentication error."** The hook never waits for a password. Set up the GitHub CLI sign-in or a deploy key (step 1).
+* **"Commit blocked: it touches more than one wiki."** That's working as designed. Commit one wiki at a time. If you mean to cross wikis, use `git commit --no-verify`.
+* **"Obsidian shows `.obsidian/` or `_state/` as clutter."** Hide them under Settings, Files and links, Excluded files, or just ignore them. They're meant to be there.
