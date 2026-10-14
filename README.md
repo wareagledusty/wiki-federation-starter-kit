@@ -28,7 +28,7 @@ Plan on an afternoon. You won't write any code. You'll type plain sentences to y
 
 Pick one:
 
-* **With a GitHub account (recommended).** Click **Use this template**, above the file list on this page, then **Create a new repository**. Name it, choose **Private**, and click **Create repository from template**. Then put it on your computer: on your new repository's page, click **Code**, then **Open with GitHub Desktop**. GitHub Desktop asks where to keep it, so pick a place and click **Clone**. If you use git, you can clone it instead.
+* **With a GitHub account (recommended).** Click **Use this template**, above the file list on this page, then **Create a new repository**. Name it, choose **Private**, and click **Create repository from template**. Don't click **Fork** instead: a fork of a public repository is always public, and you can't make it private. Then put it on your computer: on your new repository's page, click **Code**, then **Open with GitHub Desktop**. GitHub Desktop asks where to keep it, so pick a place and click **Clone**. If you use git, you can clone it instead.
 * **Without a GitHub account.** On this page, click **Code**, then **Download ZIP**, and unzip it wherever you keep your documents.
 * **If you already use git.** A plain `git clone` of this repository works too. START-HERE disconnects your copy from this repository, so your work never lands here.
 

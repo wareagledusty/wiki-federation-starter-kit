@@ -98,6 +98,7 @@ The kit's `wiki-*` skill folders follow the open Agent Skills format: a `name` o
 
 * **First branch name.** `git init` still names the first branch `master` unless you've set `init.defaultBranch`. The kit uses `git init -b main`, and `git branch -M main` before a first push. [43] [44]
 * **Template copies.** Above the file list, click **Use this template**, then **Create a new repository**, and finish with **Create repository from template**. "Use this template" creates your repository with a single commit and unrelated history. You can't merge later kit updates into it, so you copy them in by hand. [45]
+* **Forks.** A fork of a public repository is public, and you can't change a fork's visibility on its own. A template copy lets you choose **Private**, which is why the kit sends you to **Use this template** instead. [45] [58]
 * **GitHub Desktop.** To put a repository on your computer without git commands, click **Code** above the file list, then **Open with GitHub Desktop**. GitHub Desktop asks where to keep the folder, and clones it when you click **Clone**. [56]
 * **Download ZIP** gives you a snapshot of the files, without history. [46]
 * **Hooks.** Clones don't copy hooks, and git ignores a hook file that isn't executable. `sh git-hooks/install.sh` copies the kit's hooks into `.git/hooks/` and marks them executable. [47] [48]
@@ -172,3 +173,4 @@ Each source was checked on 2026-10-13, unless its line gives a later date.
 55. Obsidian license: https://obsidian.md/license
 56. GitHub docs, Cloning a repository from GitHub to GitHub Desktop (checked 2026-10-14): https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-a-repository-from-github-to-github-desktop
 57. Pro Git, Installing Git (checked 2026-10-14): https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+58. GitHub docs, About permissions and visibility of forks (checked 2026-10-14): https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-permissions-and-visibility-of-forks
