@@ -8,7 +8,7 @@ Health-check this wiki. Use this whenever the human asks for a lint, a health ch
 
 ## Checks
 
-1. **Orphans:** pages no other page links to.
+1. **Orphans:** pages no other page links to. Links from `index.md` don't count, because it links to everything, and `index.md` and `current-state.md` are exempt.
 2. **Broken links:** relative links that point at a file that doesn't exist.
 3. **Staleness:** recompute each source's sha256 and compare it with `_state/sources.md`. Mark the pages that depend on a changed source `stale`. If this wiki sets freshness windows, also flag every page whose `review_by` date has passed.
 4. **Open placeholders:** list every `{{VERIFY: ...}}` in the wiki, with its page.
