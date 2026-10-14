@@ -13,11 +13,11 @@ cd path/to/your-copy-of-the-kit
 ## Step 2. Make it your own git repository
 
 ```sh
-git rev-parse --is-inside-work-tree || git init -b main
+git rev-parse --is-inside-work-tree 2>/dev/null || git init -b main
 git remote -v
 ```
 
-The first line turns a ZIP download into a git repository, and does nothing to a copy that's already one. If the second line shows `wareagledusty/wiki-federation-starter-kit`, you cloned the public kit. Disconnect it, so your work never tries to push there:
+The first line turns a ZIP download into a git repository. For a copy that's already one, it just prints `true`. If the second line shows `wareagledusty/wiki-federation-starter-kit`, you cloned the public kit. Disconnect it, so your work never tries to push there:
 
 ```sh
 git remote remove origin
