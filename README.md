@@ -15,22 +15,53 @@ Built by Dusty Holcomb at Arcqus.AI. The core pattern comes from Andrej Karpathy
 * **An AI coding agent that can read and edit files in a folder.**
   * **Claude Code** requires a Pro, Max, Team, Enterprise, or Console account; the free plan doesn't include it. It also runs inside the Claude desktop app (on Pro, Max, Team, or Enterprise), so you don't need a terminal.
   * **Codex** is included in ChatGPT plans, including Free and Go. On Free and Go, OpenAI offers it in the ChatGPT desktop app, subject to rollout. You can also sign in with an API key.
-* **Git.** On Windows, install Git for Windows, which includes Git Bash, the shell you'll use for the kit's commands.
-* **Optional:** Obsidian (free) to read your wiki, and a GitHub account to back it up.
+* **Git.** On a Mac, if it isn't installed yet, open Terminal and type `git --version`, and macOS offers to install it. On Windows, install Git for Windows, which includes Git Bash, the shell you'll use for the kit's commands.
+* **Optional:** Obsidian (free) to read your wiki, and a GitHub account to back it up. With a GitHub account, the GitHub Desktop app gets your copy onto your computer without any git commands.
 
 **A word on privacy:** when your agent reads a source, that content goes to the AI provider under your account's terms. Check those terms before you ingest anything client-confidential.
 
 ## Get it running
 
-1. Click **Use this template**, then **Create a new repository**, and choose **Private**. Then get your copy onto your computer: on your new repository's page, click **Code**, then **Open with GitHub Desktop**, or clone it with git.
-   * **No GitHub account?** On this page, click **Code**, then **Download ZIP**, and unzip it anywhere.
-   * **Prefer git?** A plain `git clone` of this repository works too. START-HERE disconnects your copy from this repository for you.
-2. Open that folder in your AI agent.
-3. Type: **"Read START-HERE.md and build my first wiki."**
+Plan on an afternoon. You won't write any code. You'll type plain sentences to your agent, and it does the rest.
 
-The agent asks a few questions, builds your first wiki, and then walks you through feeding it three or four sources. Once it's built, always start your agent **inside that wiki's folder**. That's how Claude Code and Codex pick up both the shared rules and your wiki's rules. Using another agent? [COMPATIBILITY.md](COMPATIBILITY.md) says where to start it.
+### 1. Get your own copy
 
-Prefer to build it by hand? Follow [SETUP.md](SETUP.md).
+Pick one:
+
+* **With a GitHub account (recommended).** Click **Use this template**, above the file list on this page, then **Create a new repository**. Name it, choose **Private**, and click **Create repository from template**. Then put it on your computer: on your new repository's page, click **Code**, then **Open with GitHub Desktop**. GitHub Desktop asks where to keep it, so pick a place and click **Clone**. If you use git, you can clone it instead.
+* **Without a GitHub account.** On this page, click **Code**, then **Download ZIP**, and unzip it wherever you keep your documents.
+* **If you already use git.** A plain `git clone` of this repository works too. START-HERE disconnects your copy from this repository, so your work never lands here.
+
+Whichever you pick, you end up with one folder on your computer. That folder is your copy of the kit.
+
+### 2. Open that folder in your AI agent
+
+* **Claude desktop app:** open the **Code** tab, choose **Local**, click **Select folder**, and pick the folder.
+* **ChatGPT desktop app (Codex):** click **Add new project** next to **Chats**, and pick the folder.
+* **A terminal:** go into the folder with `cd`, then run `claude` for Claude Code, or `codex` for Codex.
+* **Another agent:** open the folder the way it opens a project. [COMPATIBILITY.md](COMPATIBILITY.md) covers Cursor, GitHub Copilot, Gemini CLI, and several more.
+
+### 3. Type one sentence
+
+**"Read START-HERE.md and build my first wiki."**
+
+### 4. Answer a few questions
+
+First, the agent checks your folder and sets up git if it needs to. Then it asks what the wiki is for, what to call it, and whether it will hold confidential material, and it recommends which kind of wiki to build. It sums up the plan and waits for your yes before it builds anything.
+
+Depending on its settings, your agent may ask your permission before it runs a command, such as setting up git or saving a version of your wiki (a git commit). Read what it wants to run, and approve it when it matches what you asked for. Codex asks before every commit, because it keeps git's own files read-only by default.
+
+### 5. Feed it your first sources
+
+Once the wiki is built, the agent asks for three or four sources. Put them in your new wiki's `raw/` folder, for example `market-notes/raw/`. Notes, articles, and transcripts all make good sources, and markdown or plain text files are easiest. The agent then walks you through the four moves below, from your first ingest to a cited answer and a health check.
+
+### 6. Next time, start inside your wiki's folder
+
+From then on, open your **wiki's own folder** in your agent, not the kit's top folder. Do it the same way as in step 2, but pick the wiki's folder, for example `market-notes/`. That's how Claude Code and Codex pick up both the shared rules and your wiki's rules. The first time, Claude Code may ask before it loads or reads files from the folder above. Allow it. Using another agent? [COMPATIBILITY.md](COMPATIBILITY.md) says where to start it.
+
+**Optional:** read your wiki in Obsidian, and back it up to a private GitHub repository. [CONNECT-OBSIDIAN-AND-GITHUB.md](CONNECT-OBSIDIAN-AND-GITHUB.md) walks you through both.
+
+**Stuck?** Ask your agent. It can read every file in the kit and explain any step. Prefer to build by hand? Follow [SETUP.md](SETUP.md).
 
 ## The four moves
 

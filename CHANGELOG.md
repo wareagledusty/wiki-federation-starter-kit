@@ -22,7 +22,7 @@ Version 2 makes the kit work in any capable AI coding agent, fixes the places wh
 
 ### Easier for a newcomer
 
-* The README leads with what you need, three ways to get the kit, one sentence to type ("Read START-HERE.md and build my first wiki."), and the four moves: ingest, query, file back, and lint.
+* The README leads with what you need, then a six-step guide from download to a first cited answer: three ways to get the kit, how to open it in each agent, the one sentence to type ("Read START-HERE.md and build my first wiki."), what the agent will ask, and where to start it next time. Then come the four moves: ingest, query, file back, and lint.
 * START-HERE builds one wiki first, on the reconcile archetype unless you're building a thesis or worldview.
 * Both archetypes stand alone; neither assumes the other exists.
 * A privacy note says where your sources go when the agent reads them.
