@@ -39,6 +39,7 @@ That's all. Skills and slash commands are shortcuts. A plain request like "inges
 * **Older custom commands** have been merged into skills. [3]
 * **Plans.** "Claude Code requires a Pro, Max, Team, Enterprise, or Console account. The free claude.ai plan does not include Claude Code access." [4] The desktop quickstart lists Pro, Max, Team, or Enterprise. [5]
 * **Desktop app.** The Claude desktop app's Code tab runs Claude Code on a folder on your computer, with no terminal. Click **Code**, choose **Local**, then click **Select folder**. It runs on macOS and Windows, with Linux in beta. [5] [6]
+* **Permission prompts.** Whether Claude Code asks before it acts depends on its permission mode. Manual mode asks before most file edits and shell commands, except a built-in set of read-only commands. From version 2.1.283, terminal sessions start in auto mode by default when it's available, and in auto mode a second model reviews each action instead of asking you. In the desktop app, you pick the mode with the selector next to the send button. [7] [8]
 * **Sandbox.** It's off by default. If you turn it on, network access goes through an allowlist that starts empty, so a push from the post-commit hook can be blocked or prompted until github.com is allowed. On macOS, pushes over SSH fail inside the sandbox even when the host is allowed. The docs don't say how git's own hooks behave inside the sandbox, so if a push doesn't arrive, push by hand. [9]
 
 ## Codex
@@ -96,10 +97,12 @@ The kit's `wiki-*` skill folders follow the open Agent Skills format: a `name` o
 ## Git, GitHub, and your computer
 
 * **First branch name.** `git init` still names the first branch `master` unless you've set `init.defaultBranch`. The kit uses `git init -b main`, and `git branch -M main` before a first push. [43] [44]
-* **Template copies.** "Use this template" creates your repository with a single commit and unrelated history. You can't merge later kit updates into it, so you copy them in by hand. [45]
+* **Template copies.** Above the file list, click **Use this template**, then **Create a new repository**, and finish with **Create repository from template**. "Use this template" creates your repository with a single commit and unrelated history. You can't merge later kit updates into it, so you copy them in by hand. [45]
+* **GitHub Desktop.** To put a repository on your computer without git commands, click **Code** above the file list, then **Open with GitHub Desktop**. GitHub Desktop asks where to keep the folder, and clones it when you click **Clone**. [56]
 * **Download ZIP** gives you a snapshot of the files, without history. [46]
 * **Hooks.** Clones don't copy hooks, and git ignores a hook file that isn't executable. `sh git-hooks/install.sh` copies the kit's hooks into `.git/hooks/` and marks them executable. [47] [48]
 * **GitHub CLI sign-in.** In `gh auth login`, choose HTTPS and answer yes when it asks to authenticate Git with your GitHub credentials. GitHub CLI then stores your Git credentials for you. [49] In this release's testing on macOS, a dry-run push that used only GitHub CLI's credential, with no terminal attached and terminal prompts turned off, signed in without a prompt, as the hook needs. That credential can push to every repository your account can write to, while a deploy key reaches only the one repository you add it to. [50] [51]
+* **Mac.** If git isn't installed yet, run `git --version` in Terminal. macOS then offers to install Apple's command line tools, which include git. [57]
 * **Windows.** Git for Windows "provides a BASH emulation used to run Git from the command line." Run the kit's shell commands in Git Bash. The kit pins hooks and scripts to LF line endings, so a Windows checkout can't break their first line. [52] [53] {{VERIFY: that the full Git for Windows install runs the kit's `#!/bin/sh` hooks. Its docs state this only for the smaller MinGit build.}}
 * **macOS background sync.** `launchctl load` is a legacy subcommand, and `bootstrap` is the recommended alternative, so the kit's instructions use `bootstrap`. [54]
 * **Obsidian** is "free for all purposes, including personal, commercial, and non-profit use." [55]
@@ -110,7 +113,7 @@ Some agents run commands in a sandbox with network access off. A commit made the
 
 ## Sources
 
-Each source was checked on 2026-10-13.
+Each source was checked on 2026-10-13, unless its line gives a later date.
 
 1. Claude Code docs, How Claude remembers your project: https://code.claude.com/docs/en/memory
 2. Claude Code changelog, version 2.1.277: https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
@@ -118,8 +121,8 @@ Each source was checked on 2026-10-13.
 4. Claude Code docs, Set up Claude Code: https://code.claude.com/docs/en/setup
 5. Claude Code docs, Desktop quickstart: https://code.claude.com/docs/en/desktop-quickstart
 6. Claude Code docs, Desktop on Linux: https://code.claude.com/docs/en/desktop-linux
-7. Claude Code docs, Permissions: https://code.claude.com/docs/en/permissions
-8. Claude Code docs, Permission modes: https://code.claude.com/docs/en/permission-modes
+7. Claude Code docs, Permissions (checked again 2026-10-14): https://code.claude.com/docs/en/permissions
+8. Claude Code docs, Permission modes (checked again 2026-10-14): https://code.claude.com/docs/en/permission-modes
 9. Claude Code docs, Sandboxing: https://code.claude.com/docs/en/sandboxing
 10. Codex docs, AGENTS.md: https://learn.chatgpt.com/docs/agent-configuration/agents-md
 11. Codex docs, Advanced configuration: https://learn.chatgpt.com/docs/config-file/config-advanced
@@ -156,7 +159,7 @@ Each source was checked on 2026-10-13.
 42. Agent Skills specification: https://agentskills.io/specification
 43. Git docs, git init: https://git-scm.com/docs/git-init
 44. Git docs, git branch: https://git-scm.com/docs/git-branch
-45. GitHub docs, Creating a repository from a template: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
+45. GitHub docs, Creating a repository from a template (checked again 2026-10-14): https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
 46. GitHub docs, Downloading source code archives: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives
 47. Git docs, githooks: https://git-scm.com/docs/githooks
 48. Pro Git, Git Hooks: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
@@ -167,3 +170,5 @@ Each source was checked on 2026-10-13.
 53. Git docs, gitattributes (eol): https://git-scm.com/docs/gitattributes
 54. macOS `man launchctl`, LEGACY SUBCOMMANDS (macOS 26.6.2)
 55. Obsidian license: https://obsidian.md/license
+56. GitHub docs, Cloning a repository from GitHub to GitHub Desktop (checked 2026-10-14): https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-a-repository-from-github-to-github-desktop
+57. Pro Git, Installing Git (checked 2026-10-14): https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
