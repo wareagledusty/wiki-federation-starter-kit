@@ -30,6 +30,7 @@ The README links to `docs/Arcqus-AI-LLM-Wiki-Primer.pdf`. Export it from Word, s
 
 * **Template repository** is on (Settings, General). It makes **Use this template** appear.
 * The repository description should match the README's opening line.
+* **`main` is protected** (Settings, Branches). Every change arrives through a pull request, with no approvals required. Force pushes and deletion are blocked, and **Do not allow bypassing the above settings** is on, so the rules also bind admins, and any agent using an admin's credentials. No status checks are required, because the repository has no CI.
 
 ## Working on the kit with an agent
 
