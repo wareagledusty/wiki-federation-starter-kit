@@ -13,7 +13,7 @@ Fold one new source into this wiki. Use this whenever the human asks to ingest, 
 3. **Confirm the job.** A source is ingested for something, never "just in case." Confirm what this wiki needs from it. If part of it belongs to another wiki's scope, take only this wiki's part, and note the rest as a one-line hunch (shared rules, section 4).
 4. **Propose; don't write yet.** Summarize the key takeaways. List the pages you'll create or update, and the claims you'll write. Wait for the human's go-ahead, unless this wiki's `AGENTS.md` explicitly allows batch mode.
 5. **Integrate,** once the human says go:
-   * Write the source-summary page at `wiki/sources/<source file name>.md`, from the template in `_shared/TEMPLATES.md`.
+   * Write the source-summary page at `wiki/sources/<name>.md`, from the template in `_shared/TEMPLATES.md`. Build `<name>` from the source's file name: drop the extension, use lowercase, and turn each run of spaces and punctuation into one hyphen. So `raw/2026-10-14 Trip Notes, Day 2.docx` gets `wiki/sources/2026-10-14-trip-notes-day-2.md`. If another summary already has that name, add `-2`.
    * Update every entity and concept page the source touches. Create a concept page where a new concept earns one. One source usually touches several pages. If every source only ever touches one page, you've built a folder, not a wiki.
    * End every claim with a citation: `[src: <source-file>#<locator>]`.
    * Before you write a claim, search the wiki for its citation. If that claim is already there, update it in place. Never add a duplicate.
