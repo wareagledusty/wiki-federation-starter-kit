@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* **Source summaries follow the naming rule.** Ingest now names a summary page after its source in lowercase with hyphens, without the file extension. Before, a source named with spaces or capitals produced a page name that broke the kit's own rule.
 * **Live tested in Claude Code and Codex** on 2026-10-14. Each ran START-HERE, a first cited answer, a file back, and a lint pass. COMPATIBILITY.md and the README now say so.
 
 ## v2.0.0
